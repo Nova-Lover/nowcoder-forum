@@ -1,8 +1,10 @@
 package com.nowcoder.community.controller;
 
+import com.nowcoder.community.constant.CommentEntityConstant;
 import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.DiscussPostService;
+import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.service.UserService;
 
 import com.nowcoder.community.vo.PageInfo;
@@ -35,6 +37,9 @@ public class IndexController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private LikeService likeService;
+
     @RequestMapping("index")
     public String getIndexPage(Model model, PageInfo pageInfo){
         pageInfo.setRows(discussPostService.findDiscussPostCount(0));
@@ -48,6 +53,9 @@ public class IndexController {
                 map.put("post",discussPost);
                 User user = userService.findUserById(discussPost.getUserId());
                 map.put("user",user);
+
+                long likeCount = likeService.findEntityLikeCount(CommentEntityConstant.ENTITY_TYPE_POST.getType(),discussPost.getId());
+                map.put("likeCount",likeCount);
                 userDiscussPosts.add(map);
             }
 

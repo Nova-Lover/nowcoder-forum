@@ -150,7 +150,7 @@ public class UserController {
         int activationResult = userService.activation(userId, code);
         if(activationResult == ActivationStatus.ACTIVATION_SUCCESS.getCode()){
             model.addAttribute("msg","激活成功,您的账号已经可以正常使用了！");
-            model.addAttribute("target","/user/login");
+            model.addAttribute("target","/user/loginPage");
         }else if(activationResult == ActivationStatus.ACTIVATION_FAILURE.getCode()){
             model.addAttribute("msg","无效操作，该账号已经激活过了");
             model.addAttribute("target","/index");

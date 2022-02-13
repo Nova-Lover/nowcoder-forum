@@ -7,6 +7,7 @@ import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.CommentService;
 import com.nowcoder.community.service.DiscussPostService;
+import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CommonUtil;
 import com.nowcoder.community.util.ThreadLocalHolder;
@@ -36,6 +37,9 @@ public class DiscussPostController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private LikeService likeService;
 
     @Autowired
     private CommentService commentService;
@@ -74,6 +78,14 @@ public class DiscussPostController {
         User user = userService.findUserById(post.getUserId());
         model.addAttribute("user",user);
 
+        // 点赞
+        // 点赞数量
+        long likeCount = likeService.findEntityLikeCount(CommentEntityConstant.ENTITY_TYPE_POST.getType(),discussPostId);
+        model.addAttribute("likeCount",likeCount);
+        // 点赞状态
+        int likeStatus = userThreadLocalHolder.getCache()==null ? 0:likeService.findEntityLikeStatus(userThreadLocalHolder.getCache().getId(),CommentEntityConstant.ENTITY_TYPE_POST.getType(),discussPostId);
+        model.addAttribute("likeStatus",likeStatus);
+
         // 分页查询帖子评论
         pageInfo.setLimit(5);
         pageInfo.setPath("/discuss/detail/" + discussPostId);
@@ -95,6 +107,12 @@ public class DiscussPostController {
                 commentVo.put("user",userService.findUserById(comment.getUserId()));
                 // 回复列表：评论的评论
                 List<Comment> replyList = commentService.findCommentByEntity(CommentEntityConstant.ENTITY_TYPE_COMMENT.getType(), comment.getId(), 0, Integer.MAX_VALUE);
+                // 点赞数量
+                likeCount = likeService.findEntityLikeCount(CommentEntityConstant.ENTITY_TYPE_COMMENT.getType(),comment.getId());
+                commentVo.put("likeCount",likeCount);
+                // 点赞状态
+                likeStatus = userThreadLocalHolder.getCache()==null ? 0:likeService.findEntityLikeStatus(userThreadLocalHolder.getCache().getId(),CommentEntityConstant.ENTITY_TYPE_COMMENT.getType(),comment.getId());
+                commentVo.put("likeStatus",likeStatus);
                 // 回复VO列表
                 List<Map<String,Object>> replyVoList = new ArrayList<>();
                 if(!CommonUtil.isEmtpy(replyList)){
@@ -104,6 +122,12 @@ public class DiscussPostController {
                         replyVo.put("reply",reply);
                         // 作者
                         replyVo.put("user",userService.findUserById(reply.getUserId()));
+                        // 点赞数量
+                        likeCount = likeService.findEntityLikeCount(CommentEntityConstant.ENTITY_TYPE_COMMENT.getType(),reply.getId());
+                        replyVo.put("likeCount",likeCount);
+                        // 点赞状态
+                        likeStatus = userThreadLocalHolder.getCache()==null ? 0:likeService.findEntityLikeStatus(userThreadLocalHolder.getCache().getId(),CommentEntityConstant.ENTITY_TYPE_COMMENT.getType(),reply.getId());
+                        replyVo.put("likeStatus",likeStatus);
                         // 回复目标
                         User target = reply.getTargetId()==0?null:userService.findUserById(reply.getTargetId());
                         replyVo.put("target",target);
