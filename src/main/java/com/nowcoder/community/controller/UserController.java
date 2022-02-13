@@ -2,17 +2,12 @@ package com.nowcoder.community.controller;
 
 import com.google.code.kaptcha.Producer;
 import com.nowcoder.community.annotation.LoginRequired;
-import com.nowcoder.community.constant.ActivationStatus;
-import com.nowcoder.community.constant.LoginConstant;
-import com.nowcoder.community.constant.ResultEnum;
-import com.nowcoder.community.constant.SysEmailConstant;
+import com.nowcoder.community.constant.*;
 import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.ReplyInfo;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.exception.CustomizeException;
-import com.nowcoder.community.service.CommentService;
-import com.nowcoder.community.service.DiscussPostService;
-import com.nowcoder.community.service.UserService;
+import com.nowcoder.community.service.*;
 import com.nowcoder.community.util.CommonUtil;
 import com.nowcoder.community.util.ThreadLocalHolder;
 import com.nowcoder.community.vo.PageInfo;
@@ -58,7 +53,13 @@ public class UserController {
     private DiscussPostService discussPostService;
 
     @Autowired
+    private FollowService followService;
+
+    @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private LikeService likeService;
 
     @Autowired
     private Producer kaptchaProducer;
@@ -249,11 +250,37 @@ public class UserController {
         }
     }
 
-    @RequestMapping(path = "/profile",method = RequestMethod.GET)
+    @RequestMapping(path = "/profile/{userId}",method = RequestMethod.GET)
     @LoginRequired
-    public String getProfilePage(Model model){
-        User user = userThreadLocalHolder.getCache();
+    public String getProfilePage(Model model,@PathVariable("userId") int userId){
+        User user = userService.findUserById(userId);
+        if(CommonUtil.isEmtpy(user)){
+            throw new RuntimeException("用户登录异常");
+        }
+        // 用户信息
         model.addAttribute("user",user);
+
+        // 显示正确的点赞数量、关注数量、粉丝数量、用户关注状态
+        // 点赞数量
+        int userLikeCount = likeService.findUserLikeCount(userId);
+        model.addAttribute("userLikeCount",userLikeCount);
+
+        // 关注数量
+        long followeeCount = followService.findFolloweeCount(userId, CommentEntityConstant.ENTITY_TYPE_USER.getType());
+        model.addAttribute("followeeCount",followeeCount);
+
+
+        // 粉丝数量
+        long followerCount = followService.findFollowerCount(CommentEntityConstant.ENTITY_TYPE_USER.getType(), userId);
+        model.addAttribute("followerCount",followerCount);
+
+        // 是否已关注
+        boolean hasFollowed = false;
+        if(!CommonUtil.isEmtpy(userThreadLocalHolder.getCache())){
+            hasFollowed = followService.hasFollowed(userThreadLocalHolder.getCache().getId(),CommentEntityConstant.ENTITY_TYPE_USER.getType(),userId);
+        }
+        model.addAttribute("hasFollowed",hasFollowed);
+
         return "/site/profile";
     }
 

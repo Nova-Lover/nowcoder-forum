@@ -33,11 +33,11 @@ public class LikeController {
     @RequestMapping(path = "/giveLike",method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
-    public String like(int entityType,int entityId){
+    public String like(int entityType,int entityId,int entityUserId){
         User user = userThreadLocalHolder.getCache();
 
         // 点赞
-        likeService.like(user.getId(),entityType,entityId);
+        likeService.like(user.getId(),entityType,entityId,entityUserId);
         // 数量
         long likeCount = likeService.findEntityLikeCount(entityType,entityId);
         // 状态

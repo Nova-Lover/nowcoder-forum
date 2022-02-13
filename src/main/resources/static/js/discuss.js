@@ -1,7 +1,7 @@
-function like(obj,entityType,entityId) {
+function like(obj,entityType,entityId,entityUserId) {
     $.post(
         PROJECT_ROOT + "/like/giveLike",
-        {"entityType":entityType,"entityId":entityId},
+        {"entityType":entityType,"entityId":entityId,"entityUserId":entityUserId},
         function (data) {
             data = $.parseJSON(data);
             if(data.code==0){

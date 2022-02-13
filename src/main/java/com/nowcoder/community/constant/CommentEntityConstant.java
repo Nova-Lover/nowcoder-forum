@@ -16,7 +16,12 @@ public enum CommentEntityConstant {
     /**
      * 实体类型:评论
      */
-    ENTITY_TYPE_COMMENT(2,"评论");
+    ENTITY_TYPE_COMMENT(2,"评论"),
+
+    /**
+     * 实体类型:用户
+     */
+    ENTITY_TYPE_USER(3,"用户");
 
     int type;
     String desc;

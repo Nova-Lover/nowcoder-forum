@@ -6,6 +6,7 @@ import com.nowcoder.community.entity.Comment;
 import com.nowcoder.community.entity.ReplyInfo;
 import com.nowcoder.community.filter.SensitiveWordFilter;
 import com.nowcoder.community.util.CommonUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -64,6 +65,10 @@ public class CommentService {
     public int addComment(Comment comment){
         if(CommonUtil.isEmtpy(comment)){
             throw new IllegalArgumentException("参数不能为空");
+        }
+
+        if(StringUtils.isBlank(comment.getContent())){
+            throw new IllegalArgumentException("评论内容为空");
         }
 
         // 添加评论
