@@ -5,11 +5,11 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link rel="icon" href="https://static.nowcoder.com/images/logo_87_87.png"/>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
-	<link rel="stylesheet" href="@{/css/global.css}" />
+	<link rel="stylesheet" th:href="@{/css/global.css}" />
 	<title>牛客网-操作结果</title>
 </head>
-<body class="bg-white">
-	<div class="nk-container">
+<body class="bg-white" style="height: 100%">
+	<div class="nk-container" style="height: 100vh;background: #888888">
 		<!-- 头部 -->
 		<header class="bg-dark sticky-top" th:replace="index::header">
 			<div class="container">
@@ -73,7 +73,7 @@
 		</div>
 
 		<!-- 尾部 -->
-		<footer class="bg-dark" style="position: relative;bottom: 0px;">
+		<footer class="bg-dark" style="margin-top: 445px;">
 			<div class="container">
 				<div class="row">
 					<!-- 二维码 -->
