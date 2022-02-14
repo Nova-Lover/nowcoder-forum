@@ -9,12 +9,15 @@ import com.nowcoder.community.entity.User;
 import com.nowcoder.community.exception.CustomizeException;
 import com.nowcoder.community.service.*;
 import com.nowcoder.community.util.CommonUtil;
+import com.nowcoder.community.util.RedisKeyUtil;
+import com.nowcoder.community.util.RedisUtil;
 import com.nowcoder.community.util.ThreadLocalHolder;
 import com.nowcoder.community.vo.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -34,6 +37,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 用户管理控制层
@@ -63,6 +67,9 @@ public class UserController {
 
     @Autowired
     private Producer kaptchaProducer;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Value("${server.servlet.context-path}")
     private String contextPath;
@@ -108,10 +115,15 @@ public class UserController {
     }
 
     @RequestMapping(path = "login",method = RequestMethod.POST)
-    public String login(Model model,HttpSession session,HttpServletResponse response,
-                        String username,String password,String verifyCode,boolean rememberMe){
+    public String login(Model model,/*HttpSession session,*/HttpServletResponse response,
+                        String username,String password,String verifyCode,boolean rememberMe,@CookieValue("kaptchaOwner") String kaptchaOwner){
         // 检查验证码
-        String kaptcha = (String) session.getAttribute("kaptcha");
+        //String kaptcha = (String) session.getAttribute("kaptcha");
+        String kaptcha=null;
+        if(StringUtils.isNotBlank(kaptchaOwner)){
+            String kaptchaKey = RedisKeyUtil.getKaptchaKey(kaptchaOwner);
+            kaptcha = (String) redisTemplate.opsForValue().get(kaptchaKey);
+        }
         if(StringUtils.isBlank(kaptcha)||StringUtils.isBlank(verifyCode)||!kaptcha.equalsIgnoreCase(verifyCode)){
             model.addAttribute("codeMsg","验证码不正确");
             return "/site/login";
@@ -164,13 +176,24 @@ public class UserController {
     }
 
     @RequestMapping(path = "/kaptcha",method = RequestMethod.GET)
-    public void getKaptcha(HttpServletResponse response, HttpSession session){
+    public void getKaptcha(HttpServletResponse response/*, HttpSession session*/){
         //生成验证码
         String text = kaptchaProducer.createText();
         BufferedImage image = kaptchaProducer.createImage(text);
 
         // 将验证码存入session
-        session.setAttribute("kaptcha",text);
+        // session.setAttribute("kaptcha",text);
+
+        // 验证码归属者,每次刷新验证码，为客户端用户生成临时凭证返回给用户,其中临时凭证存放在cookie中
+        String kaptchaOwner = CommonUtil.generateUUID();
+        Cookie cookie = new Cookie("kaptchaOwner", kaptchaOwner);
+        cookie.setMaxAge(60);
+        cookie.setPath(contextPath);
+        response.addCookie(cookie);
+
+        // 将验证码存入redis
+        String kaptchaKey = RedisKeyUtil.getKaptchaKey(kaptchaOwner);
+        redisTemplate.opsForValue().set(kaptchaKey,text,60, TimeUnit.SECONDS);
 
         // 将图片输出给浏览器
         response.setContentType("image/png");
