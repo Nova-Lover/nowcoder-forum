@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Param;
  * @date 2022/2/5 22:30
  */
 @Mapper
+@Deprecated
 public interface LoginTicketMapper {
     /**
      * 插入用户登录凭证记录

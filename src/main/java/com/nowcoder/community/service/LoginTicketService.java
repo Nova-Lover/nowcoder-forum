@@ -2,7 +2,9 @@ package com.nowcoder.community.service;
 
 import com.nowcoder.community.dao.LoginTicketMapper;
 import com.nowcoder.community.entity.LoginTicket;
+import com.nowcoder.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,8 +16,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoginTicketService {
 
+//    @Autowired
+//    private LoginTicketMapper loginTicketMapper;
+
     @Autowired
-    private LoginTicketMapper loginTicketMapper;
+    private RedisTemplate redisTemplate;
 
     /**
      * 根据用户浏览器cookie携带的ticket查询用户登录凭证
@@ -23,6 +28,7 @@ public class LoginTicketService {
      * @return
      */
     public LoginTicket findLoginTicket(String ticket){
-        return loginTicketMapper.selectByTicket(ticket);
+        String ticketKey = RedisKeyUtil.getTicketKey(ticket);
+        return (LoginTicket)redisTemplate.opsForValue().get(ticketKey);
     }
 }

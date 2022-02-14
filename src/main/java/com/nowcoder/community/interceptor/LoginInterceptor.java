@@ -60,15 +60,27 @@ public class LoginInterceptor implements HandlerInterceptor {
         if(!CommonUtil.isEmtpy(ticket)){
             // 查询凭证
             LoginTicket loginTicket = loginTicketService.findLoginTicket(ticket);
-            // 检查登录凭证是否有效
-            if(loginTicket.getStatus()==0&&loginTicket.getExpired().after(new Date())){
-                // 根据凭证查询用户
-                User user = userService.findUserById(loginTicket.getUserId());
-                // 在本次请求中持有用户信息
-                userThreadLocalHolder.setCache(user);
-                log.info("{}用户登录成功,当前登录时间为{}",user.getUsername(),CommonUtil.getFormatDate(new Date()));
-                return true;
+            if(CommonUtil.isEmtpy(loginTicket)){
+                response.sendRedirect(request.getContextPath() + "/user/loginPage");
+                String remoteHost = request.getRemoteHost();
+                log.info("用户{}未登录,正在转向登录页面......",remoteHost);
+                return false;
+            }else{
+                // 检查登录凭证是否有效
+                if(loginTicket.getStatus()==0&&loginTicket.getExpired().after(new Date())){
+                    // 根据凭证查询用户
+                    User user = userService.findUserById(loginTicket.getUserId());
+                    // 在本次请求中持有用户信息
+                    userThreadLocalHolder.setCache(user);
+                    log.info("{}用户登录成功,当前登录时间为{}",user.getUsername(),CommonUtil.getFormatDate(new Date()));
+                    return true;
+                }else{
+                    response.sendRedirect(request.getContextPath() + "/user/loginPage");
+                    log.info("登录状态失效,正在转向用户登录页面......");
+                    return false;
+                }
             }
+
         }
 
         // 获取请求路径
@@ -76,17 +88,17 @@ public class LoginInterceptor implements HandlerInterceptor {
         log.info("当前请求路径为:{}",uri);
 
         // 登录拦截
-        if (handler instanceof HandlerMethod) {
-            HandlerMethod handlerMethod = (HandlerMethod) handler;
-            Method method = handlerMethod.getMethod();
-            LoginRequired loginRequired = method.getAnnotation(LoginRequired.class);
-            // 如果用户未登录，跳转到登录页面
-            if(!CommonUtil.isEmtpy(loginRequired)&&CommonUtil.isEmtpy(userThreadLocalHolder.getCache())){
-                response.sendRedirect(request.getContextPath() + "/user/loginPage");
-                log.info("登录失败,请转向用户登录页面......");
-                return false;
-            }
-        }
+//        if (handler instanceof HandlerMethod) {
+//            HandlerMethod handlerMethod = (HandlerMethod) handler;
+//            Method method = handlerMethod.getMethod();
+//            LoginRequired loginRequired = method.getAnnotation(LoginRequired.class);
+//            // 如果用户未登录，跳转到登录页面
+//            if(!CommonUtil.isEmtpy(loginRequired)&&CommonUtil.isEmtpy(userThreadLocalHolder.getCache())){
+//                response.sendRedirect(request.getContextPath() + "/user/loginPage");
+//                log.info("登录失败,请转向用户登录页面......");
+//                return false;
+//            }
+//        }
         return true;
     }
 

@@ -10,7 +10,6 @@ import com.nowcoder.community.exception.CustomizeException;
 import com.nowcoder.community.service.*;
 import com.nowcoder.community.util.CommonUtil;
 import com.nowcoder.community.util.RedisKeyUtil;
-import com.nowcoder.community.util.RedisUtil;
 import com.nowcoder.community.util.ThreadLocalHolder;
 import com.nowcoder.community.vo.PageInfo;
 import lombok.extern.slf4j.Slf4j;
