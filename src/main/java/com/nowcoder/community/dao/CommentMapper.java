@@ -56,4 +56,11 @@ public interface CommentMapper {
      */
     int selectDiscussPostCommentCount(int userId);
 
+    /**
+     * 根据id查询评论
+     * @param id
+     * @return
+     */
+    Comment selectCommentById(int id);
+
 }

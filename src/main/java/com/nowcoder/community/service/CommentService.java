@@ -104,4 +104,13 @@ public class CommentService {
     public int findReplyInfoCount(int userId){
         return commentMapper.selectDiscussPostCommentCount(userId);
     }
+
+    /**
+     * 根据id查询评论
+     * @param id
+     * @return
+     */
+    public Comment findCommentById(int id){
+        return commentMapper.selectCommentById(id);
+    }
 }

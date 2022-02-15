@@ -1,7 +1,10 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.annotation.LoginRequired;
+import com.nowcoder.community.config.event.EventProducer;
 import com.nowcoder.community.constant.CommentEntityConstant;
+import com.nowcoder.community.constant.MessageConstant;
+import com.nowcoder.community.entity.Event;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.FollowService;
 import com.nowcoder.community.service.UserService;
@@ -36,6 +39,9 @@ public class FollowController {
     private UserService userService;
 
     @Autowired
+    private EventProducer eventProducer;
+
+    @Autowired
     private ThreadLocalHolder<User> userThreadLocalHolder;
 
     @RequestMapping(path = "/toFollow",method = RequestMethod.POST)
@@ -44,6 +50,14 @@ public class FollowController {
     public String toFollow(int entityType,int entityId){
         User user = userThreadLocalHolder.getCache();
         followService.toFollow(user.getId(),entityType,entityId);
+        // 触发关注事件
+        Event event = new Event()
+                .setTopic(MessageConstant.TOPIC_FOLLOW)
+                .setEntityType(entityType)
+                .setEntityId(entityId)
+                .setEntityUserId(entityId)
+                .setUserId(entityId);
+        eventProducer.handleEvent(event);
         return CommonUtil.getJsonString(0,"已关注");
     }
 

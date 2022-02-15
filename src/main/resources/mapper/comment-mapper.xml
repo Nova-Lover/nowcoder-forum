@@ -66,4 +66,11 @@
         on c.entity_id=d.id
         where c.user_id=#{userId}
     </select>
+
+    <select id="selectCommentById" resultType="com.nowcoder.community.entity.Comment">
+        select
+        <include refid="selectFields"/>
+        from comment
+        where id = #{id}
+    </select>
  </mapper>

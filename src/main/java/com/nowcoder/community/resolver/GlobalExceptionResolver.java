@@ -19,7 +19,7 @@ import java.util.Objects;
  * @date 2022/1/30 18:15
  */
 @Slf4j
-@RestControllerAdvice
+//@RestControllerAdvice
 public class GlobalExceptionResolver {
 
     /**

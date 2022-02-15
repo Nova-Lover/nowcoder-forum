@@ -74,11 +74,12 @@ public class LoginInterceptor implements HandlerInterceptor {
                     userThreadLocalHolder.setCache(user);
                     log.info("{}用户登录成功,当前登录时间为{}",user.getUsername(),CommonUtil.getFormatDate(new Date()));
                     return true;
-                }else{
+                }
+                /*else{
                     response.sendRedirect(request.getContextPath() + "/user/loginPage");
                     log.info("登录状态失效,正在转向用户登录页面......");
                     return false;
-                }
+                }*/
             }
 
         }
@@ -88,17 +89,17 @@ public class LoginInterceptor implements HandlerInterceptor {
         log.info("当前请求路径为:{}",uri);
 
         // 登录拦截
-//        if (handler instanceof HandlerMethod) {
-//            HandlerMethod handlerMethod = (HandlerMethod) handler;
-//            Method method = handlerMethod.getMethod();
-//            LoginRequired loginRequired = method.getAnnotation(LoginRequired.class);
-//            // 如果用户未登录，跳转到登录页面
-//            if(!CommonUtil.isEmtpy(loginRequired)&&CommonUtil.isEmtpy(userThreadLocalHolder.getCache())){
-//                response.sendRedirect(request.getContextPath() + "/user/loginPage");
-//                log.info("登录失败,请转向用户登录页面......");
-//                return false;
-//            }
-//        }
+        if (handler instanceof HandlerMethod) {
+            HandlerMethod handlerMethod = (HandlerMethod) handler;
+            Method method = handlerMethod.getMethod();
+            LoginRequired loginRequired = method.getAnnotation(LoginRequired.class);
+            // 如果用户未登录，跳转到登录页面
+            if(!CommonUtil.isEmtpy(loginRequired)&&CommonUtil.isEmtpy(userThreadLocalHolder.getCache())){
+                response.sendRedirect(request.getContextPath() + "/user/loginPage");
+                log.info("登录失败,请转向用户登录页面......");
+                return false;
+            }
+        }
         return true;
     }
 

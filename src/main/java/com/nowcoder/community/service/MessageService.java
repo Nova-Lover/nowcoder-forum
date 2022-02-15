@@ -94,4 +94,46 @@ public class MessageService {
         return messageMapper.updateStatus(ids,1);
     }
 
+    /**
+     * 查找最新的通知
+     * @param userId
+     * @param topic
+     * @return
+     */
+    public Message findLatestNotice(int userId,String topic){
+        return messageMapper.selectLatestNotice(userId,topic);
+    }
+
+    /**
+     * 查询某一主题下通知的数量
+     * @param userId
+     * @param topic
+     * @return
+     */
+    public int findNoticeCount(int userId,String topic){
+        return messageMapper.selectNoticeCount(userId,topic);
+    }
+
+    /**
+     * 查询(某一主题下)未读通知的数量
+     * @param userId
+     * @param topic
+     * @return
+     */
+    public int findNoticeUnreadCount(int userId,String topic){
+        return messageMapper.selectNoticeUnreadCount(userId,topic);
+    }
+
+    /**
+     * 分页查询用户某一主题下的通知列表
+     * @param userId
+     * @param topic
+     * @param offset
+     * @param limit
+     * @return
+     */
+    public List<Message> findNoticeList(int userId,String topic,int offset,int limit){
+        return messageMapper.selectNoticeList(userId,topic,offset,limit);
+    }
+
 }

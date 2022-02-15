@@ -35,6 +35,9 @@ public class ServiceLogAspect {
         // 用户IP地址[1.2.3.4]在{time},访问了com.nowcoder.community.service.*.*(..)
         // 用户IP地址
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if(CommonUtil.isEmtpy(requestAttributes)){
+            return;
+        }
         HttpServletRequest request = requestAttributes.getRequest();
         String ip = request.getRemoteHost();
 

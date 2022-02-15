@@ -1,6 +1,9 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.annotation.LoginRequired;
+import com.nowcoder.community.config.event.EventProducer;
+import com.nowcoder.community.constant.MessageConstant;
+import com.nowcoder.community.entity.Event;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.util.CommonUtil;
@@ -28,12 +31,15 @@ public class LikeController {
     private LikeService likeService;
 
     @Autowired
+    private EventProducer eventProducer;
+
+    @Autowired
     private ThreadLocalHolder<User> userThreadLocalHolder;
 
     @RequestMapping(path = "/giveLike",method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
-    public String like(int entityType,int entityId,int entityUserId){
+    public String like(int entityType,int entityId,int entityUserId,int postId){
         User user = userThreadLocalHolder.getCache();
 
         // 点赞
@@ -47,6 +53,18 @@ public class LikeController {
         Map<String, Object> map = new HashMap<>();
         map.put("likeCount",likeCount);
         map.put("likeStatus",likeStatus);
+
+        // 触发点赞事件
+        if (likeStatus == 1) {
+            Event event = new Event()
+                    .setTopic(MessageConstant.TOPIC_LIKE)
+                    .setUserId(userThreadLocalHolder.getCache().getId())
+                    .setEntityType(entityType)
+                    .setEntityId(entityId)
+                    .setEntityUserId(entityUserId)
+                    .setData("postId",postId);
+            eventProducer.handleEvent(event);
+        }
 
         return CommonUtil.getJsonString(0,null,map);
     }

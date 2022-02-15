@@ -17,7 +17,7 @@ import java.io.PrintWriter;
  * @version 1.0
  * @date 2022/2/9 23:08
  */
-//@ControllerAdvice(annotations = Controller.class)
+@ControllerAdvice(annotations = Controller.class)
 @Slf4j
 public class GlobalExceptionAdvice {
 
@@ -27,7 +27,7 @@ public class GlobalExceptionAdvice {
      * @param request
      * @param response
      */
-//    @ExceptionHandler({Exception.class})
+    @ExceptionHandler({Exception.class})
     public void handleException(Exception e, HttpServletRequest request, HttpServletResponse response) {
         log.error("服务器异常:{}",e.getMessage());
         for (StackTraceElement element : e.getStackTrace()){
