@@ -4,6 +4,8 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import javax.annotation.PostConstruct;
+
 /**
  * 项目启动类
  * @author Alex
@@ -12,6 +14,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 public class CommunityApplication {
+
+    @PostConstruct
+    public void init(){
+        // 解决es和redis依赖netty的冲突问题
+        // 见源码Netty2Utils.setAvailableProcessor()
+        System.setProperty("es.set.netty.runtime.available.processors","false");
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(CommunityApplication.class,args);

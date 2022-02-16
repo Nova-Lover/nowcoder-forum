@@ -1,48 +1,69 @@
 package com.nowcoder.community.entity;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
+ * 帖子实体类
+ * 添加es注解实现实体类和es库中的索引之间的映射
  * @author Alex
  * @version 1.0
  * @date 2022/1/30 17:03
  */
+@Document(indexName = "post",shards = 6,replicas = 2)
 public class DiscussPost {
     @NotNull
+    @Id
     private int id;
     /**
      * 用户ID
      */
     @NotBlank
+    @Field(type = FieldType.Integer)
     private int userId;
+    /**
+     * 帖子标题
+     * 存储数据使用ik_max_word分词器，检索数据使用ik_smart分词器
+     */
     @NotBlank
+    @Field(type = FieldType.Text,analyzer = "ik_max_word",searchAnalyzer = "ik_smart")
     private String title;
     /**
      * 帖子内容
      */
     @NotBlank
+    @Field(type = FieldType.Text,analyzer = "ik_max_word",searchAnalyzer = "ik_smart")
     private String content;
     /**
      * 帖子类型
      *  0-普通; 1-置顶;
      */
+    @Field(type = FieldType.Integer)
     private int type;
     /**
      * 帖子状态
      *  0-正常; 1-精华; 2-拉黑;
      */
+    @Field(type = FieldType.Integer)
     private int status;
+    @Field(type = FieldType.Date)
     private Date createTime;
     /**
      * 帖子评论数
      */
     @NotNull
+    @Field(type = FieldType.Integer)
     private int commentCount;
     /**
      * 帖子分数
      */
+    @Field(type = FieldType.Double)
     private double score;
 
     public int getId() {

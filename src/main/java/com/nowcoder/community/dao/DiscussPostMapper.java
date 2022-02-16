@@ -52,4 +52,10 @@ public interface DiscussPostMapper {
      * @return
      */
     int updateCommentCount(int id,int commentCount);
+
+    /**
+     * 查询所有帖子
+     * @return
+     */
+    List<DiscussPost> selAllDiscussPost();
 }

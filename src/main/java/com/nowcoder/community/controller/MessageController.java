@@ -187,21 +187,21 @@ public class MessageController {
 
         // 查询评论类通知
         Message latestCommentNotice = messageService.findLatestNotice(user.getId(), MessageConstant.TOPIC_COMMENT);
-        Map<String, Object> latestCommentNoticeVo = getNotice(latestCommentNotice, user);
+        Map<String, Object> latestCommentNoticeVo = getNotice(latestCommentNotice, user,MessageConstant.TOPIC_COMMENT);
         if (!CommonUtil.isEmtpy(latestCommentNoticeVo)) {
             model.addAttribute("commentNotice", latestCommentNoticeVo);
         }
 
         // 查询点赞类的通知
         Message latestLikeNotice = messageService.findLatestNotice(user.getId(), MessageConstant.TOPIC_LIKE);
-        Map<String, Object> latestLikeNoticeVo = getNotice(latestLikeNotice, user);
+        Map<String, Object> latestLikeNoticeVo = getNotice(latestLikeNotice, user,MessageConstant.TOPIC_LIKE);
         if (!CommonUtil.isEmtpy(latestLikeNoticeVo)) {
             model.addAttribute("likeNotice", latestLikeNoticeVo);
         }
 
         // 查询关注类的通知
         Message latestFollowNotice = messageService.findLatestNotice(user.getId(), MessageConstant.TOPIC_FOLLOW);
-        Map<String, Object> latestFollowNoticeVo = getNotice(latestFollowNotice, user);
+        Map<String, Object> latestFollowNoticeVo = getNotice(latestFollowNotice, user,MessageConstant.TOPIC_FOLLOW);
         if (!CommonUtil.isEmtpy(latestFollowNoticeVo)) {
             model.addAttribute("followNotice", latestFollowNoticeVo);
         }
@@ -217,12 +217,12 @@ public class MessageController {
 
     /**
      * 封装系统通知
-     *
      * @param notice
      * @param user
+     * @param topic
      * @return
      */
-    private Map<String, Object> getNotice(Message notice, User user) {
+    private Map<String, Object> getNotice(Message notice, User user,String topic) {
         Map<String, Object> map = new HashMap<>();
         if (!CommonUtil.isEmtpy(notice)) {
             map.put("message", notice);
@@ -232,9 +232,9 @@ public class MessageController {
             map.put("entityType", data.get("entityType"));
             map.put("entityId", data.get("entityId"));
 
-            int count = messageService.findNoticeCount(user.getId(), MessageConstant.TOPIC_FOLLOW);
+            int count = messageService.findNoticeCount(user.getId(), topic);
             map.put("count", count);
-            int unread = messageService.findNoticeUnreadCount(user.getId(), MessageConstant.TOPIC_FOLLOW);
+            int unread = messageService.findNoticeUnreadCount(user.getId(), topic);
             map.put("unread", unread);
         }
         return map;
@@ -254,7 +254,7 @@ public class MessageController {
         // 查询通知消息列表
         List<Message> noticeList = messageService.findNoticeList(user.getId(), topic, pageInfo.getOffset(), pageInfo.getLimit());
         List<Map<String, Object>> noticeVoList = new ArrayList<>();
-        if (CommonUtil.isEmtpy(noticeList)) {
+        if (!CommonUtil.isEmtpy(noticeList)) {
             for (Message notice : noticeList) {
                 Map<String, Object> map = new HashMap<>();
                 // 通知
