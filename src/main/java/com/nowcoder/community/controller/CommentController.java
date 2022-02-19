@@ -66,6 +66,15 @@ public class CommentController {
         }
         // 异步发送消息至kafka topic
         eventProducer.handleEvent(event);
+
+        if(comment.getEntityType()==CommentEntityConstant.ENTITY_TYPE_POST.getType()){
+            event = new Event()
+                    .setTopic(MessageConstant.TOPIC_PUBLISH)
+                    .setUserId(comment.getUserId())
+                    .setEntityType(CommentEntityConstant.ENTITY_TYPE_POST.getType())
+                    .setEntityId(discussPostId);
+            eventProducer.handleEvent(event);
+        }
         return "redirect:/discuss/detail/" + discussPostId;
     }
 }

@@ -5,8 +5,6 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -16,28 +14,24 @@ import java.util.Date;
  * @version 1.0
  * @date 2022/1/30 17:03
  */
-@Document(indexName = "post",shards = 6,replicas = 2)
+@Document(indexName = "discusspost",type = "_doc",shards = 6,replicas = 3)
 public class DiscussPost {
-    @NotNull
     @Id
     private int id;
     /**
      * 用户ID
      */
-    @NotBlank
     @Field(type = FieldType.Integer)
     private int userId;
     /**
      * 帖子标题
      * 存储数据使用ik_max_word分词器，检索数据使用ik_smart分词器
      */
-    @NotBlank
     @Field(type = FieldType.Text,analyzer = "ik_max_word",searchAnalyzer = "ik_smart")
     private String title;
     /**
      * 帖子内容
      */
-    @NotBlank
     @Field(type = FieldType.Text,analyzer = "ik_max_word",searchAnalyzer = "ik_smart")
     private String content;
     /**
@@ -57,7 +51,6 @@ public class DiscussPost {
     /**
      * 帖子评论数
      */
-    @NotNull
     @Field(type = FieldType.Integer)
     private int commentCount;
     /**

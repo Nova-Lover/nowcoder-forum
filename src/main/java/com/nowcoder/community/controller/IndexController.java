@@ -40,7 +40,7 @@ public class IndexController {
     @Autowired
     private LikeService likeService;
 
-    @RequestMapping("index")
+    @RequestMapping(path = {"/index","/"},method = RequestMethod.GET)
     public String getIndexPage(Model model, PageInfo pageInfo){
         pageInfo.setRows(discussPostService.findDiscussPostCount(0));
         pageInfo.setPath("index");
@@ -67,6 +67,11 @@ public class IndexController {
     @RequestMapping(path = "/error",method = RequestMethod.GET)
     public String getErrorPage(){
         return "/error/500";
+    }
+
+    @RequestMapping(path = "/denied",method = RequestMethod.GET)
+    public String getDeniedPage(){
+        return "/error/404";
     }
 
 }

@@ -2,6 +2,11 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 	<meta charset="utf-8">
+	<!--通过meta标签强制把csrf token生成在header中，访问该页面时，在此处强制生成CSRF令牌,防止没有表单的ajax请求，对这种情况做CSRF处理-->
+	<!--引入security后，自动开启csrf，每次请求都会有_csrf对象，利用它去token-->
+	<meta name="_csrf" th:content="${_csrf.token}"/>
+	<!--将token传递给服务器，需要设置csrf token的请求头的key-->
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link rel="icon" href="https://static.nowcoder.com/images/logo_87_87.png"/>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
@@ -49,8 +54,8 @@
 							</li>
 						</ul>
 						<!-- 搜索 -->
-						<form class="form-inline my-2 my-lg-0" action="site/search.html">
-							<input class="form-control mr-sm-2" type="search" aria-label="Search" />
+						<form class="form-inline my-2 my-lg-0" method="get" th:action="@{/search/search_kw}">
+							<input class="form-control mr-sm-2" type="search" aria-label="Search" name="keyword" th:value="${keyword}"/>
 							<button class="btn btn-outline-light my-2 my-sm-0" type="submit">搜索</button>
 						</form>
 					</div>

@@ -1,6 +1,7 @@
 package com.nowcoder.community.config;
 
 import com.nowcoder.community.interceptor.LoginInterceptor;
+import com.nowcoder.community.interceptor.LoginTicketInterceptor;
 import com.nowcoder.community.interceptor.MessageInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -17,11 +18,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    @Autowired
-    private LoginInterceptor loginInterceptor;
+//    @Autowired
+//    private LoginInterceptor loginInterceptor;
 
     @Autowired
     private MessageInterceptor messageInterceptor;
+
+    @Autowired
+    private LoginTicketInterceptor loginTicketInterceptor;
 
     /**
      * 配置登录拦截器
@@ -29,10 +33,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loginInterceptor)
-                .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg", "/**/*.ico", "/loginPage", "/registerPage");
+//        registry.addInterceptor(loginInterceptor)
+//                .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg", "/**/*.ico", "/loginPage", "/registerPage");
 
         registry.addInterceptor(messageInterceptor)
+                .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg", "/**/*.ico", "/loginPage", "/registerPage");
+
+        registry.addInterceptor(loginTicketInterceptor)
                 .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg", "/**/*.ico", "/loginPage", "/registerPage");
     }
 }

@@ -1,28 +1,31 @@
 package com.nowcoder.community.constant;
 
 /**
- * 系统常量枚举类
+ * 系统接口
+ *      封装系统常量信息
  * @author Alex
  * @version 1.0
- * @date 2022/2/15 14:59
+ * @date 2022/2/19 15:53
  */
-public enum SystemConstant {
+public interface SystemConstant {
+    /**
+     * 系统用户ID
+     */
+    int SYSTEM_USER_ID=1;
 
-    SYSTEM_USER_ID(1,"系统用户ID");
+    /**
+     * 系统权限:普通用户
+     */
+    String AUTHORITY_USER="user";
 
-    private int code;
-    private String desc;
+    /**
+     * 系统权限：管理员
+     */
+    String AUTHORITY_ADMIN="admin";
 
-    SystemConstant(int code, String desc) {
-        this.code = code;
-        this.desc = desc;
-    }
+    /**
+     * 系统权限：版主
+     */
+    String AUTHORITY_MODERATOR="moderator";
 
-    public int getCode() {
-        return code;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
 }

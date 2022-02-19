@@ -21,4 +21,9 @@ public interface MessageConstant {
      * 主题：关注
      */
     String TOPIC_FOLLOW = "follow";
+
+    /**
+     * 主题:发帖
+     */
+    String TOPIC_PUBLISH = "publish";
 }

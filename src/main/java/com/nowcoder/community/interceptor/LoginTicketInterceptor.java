@@ -1,6 +1,5 @@
 package com.nowcoder.community.interceptor;
 
-import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.LoginTicketService;
@@ -10,34 +9,30 @@ import com.nowcoder.community.util.CookieUtil;
 import com.nowcoder.community.util.ThreadLocalHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
-import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Date;
 
 /**
- * 登录拦截器
  * @author Alex
  * @version 1.0
- * @date 2022/2/6 10:47
+ * @date 2022/2/19 16:51
  */
 @Component
 @Slf4j
-@Deprecated
-public class LoginInterceptor implements HandlerInterceptor {
-
-    /**
-     * ===============================================
-     * preHandle 在controller之前执行
-     * postHandle 在controller之后执行
-     * afterCompletion 在模板引擎之后执行
-     * ===============================================
-     */
+public class LoginTicketInterceptor implements HandlerInterceptor {
+    @Autowired
+    private ThreadLocalHolder<User> userThreadLocalHolder;
 
     @Autowired
     private LoginTicketService loginTicketService;
@@ -45,43 +40,41 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private ThreadLocalHolder<User> userThreadLocalHolder;
 
-    /**
-     * @Description
-     * @param
-     * @return
-     * @throws
-     */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
         // 获取请求路径
         String uri = request.getRequestURI();
         log.info("当前请求路径为:{}",uri);
-
-        // 登录拦截
-        if (handler instanceof HandlerMethod) {
-            HandlerMethod handlerMethod = (HandlerMethod) handler;
-            Method method = handlerMethod.getMethod();
-            LoginRequired loginRequired = method.getAnnotation(LoginRequired.class);
-            // 如果用户未登录，跳转到登录页面
-            if(!CommonUtil.isEmtpy(loginRequired)&&CommonUtil.isEmtpy(userThreadLocalHolder.getCache())){
+        // 从cookie中获取凭证
+        String ticket = CookieUtil.getValue(request, "ticket");
+        if(!CommonUtil.isEmtpy(ticket)){
+            // 查询凭证
+            LoginTicket loginTicket = loginTicketService.findLoginTicket(ticket);
+            if(CommonUtil.isEmtpy(loginTicket)){
                 response.sendRedirect(request.getContextPath() + "/user/loginPage");
-                log.info("登录失败,请转向用户登录页面......");
+                String remoteHost = request.getRemoteHost();
+                log.info("用户{}未登录,正在转向登录页面......",remoteHost);
                 return false;
+            }else{
+                // 检查登录凭证是否有效
+                if(loginTicket.getStatus()==0&&loginTicket.getExpired().after(new Date())){
+                    // 根据凭证查询用户
+                    User user = userService.findUserById(loginTicket.getUserId());
+                    // 在本次请求中持有用户信息
+                    userThreadLocalHolder.setCache(user);
+                    log.info("{}用户登录成功,当前登录时间为{}",user.getUsername(),CommonUtil.getFormatDate(new Date()));
+                    // 构建用户认证的结果，并存入SecurityContext,便于security授权
+                    Authentication authentication = new UsernamePasswordAuthenticationToken(user, user.getPassword(), userService.getAuthorites(user.getId()));
+                    SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
+                    return true;
+                }
             }
+
         }
         return true;
     }
 
-    /**
-     * @Description
-     * @param
-     * @return
-     * @throws
-     */
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         log.info("postHandle..............");
@@ -91,16 +84,11 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
     }
 
-    /**
-     * @Description
-     * @param
-     * @return
-     * @throws
-     */
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         log.info("afterCompletion..............");
         // 清除用户信息
         userThreadLocalHolder.clear();
+        SecurityContextHolder.clearContext();
     }
 }

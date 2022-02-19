@@ -2,6 +2,7 @@ package com.nowcoder.community.service;
 
 import com.nowcoder.community.config.MailClientConfig;
 import com.nowcoder.community.constant.ActivationStatus;
+import com.nowcoder.community.constant.SystemConstant;
 import com.nowcoder.community.dao.LoginTicketMapper;
 import com.nowcoder.community.dao.UserMapper;
 import com.nowcoder.community.entity.LoginTicket;
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -299,6 +301,26 @@ public class UserService {
     private void clearCache(int userId){
         String userKey = RedisKeyUtil.getUserKey(userId);
         redisTemplate.delete(userKey);
+    }
+
+    public Collection<? extends GrantedAuthority> getAuthorites(int userId){
+        User user = this.findUserById(userId);
+
+        List<GrantedAuthority> list = new ArrayList<>();
+        list.add(new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                switch (user.getType()){
+                    case 1:
+                        return SystemConstant.AUTHORITY_ADMIN;
+                    case 2:
+                        return SystemConstant.AUTHORITY_MODERATOR;
+                    default:
+                        return SystemConstant.AUTHORITY_USER;
+                }
+            }
+        });
+        return list;
     }
 
 }

@@ -1,9 +1,12 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.annotation.LoginRequired;
+import com.nowcoder.community.config.event.EventProducer;
 import com.nowcoder.community.constant.CommentEntityConstant;
+import com.nowcoder.community.constant.MessageConstant;
 import com.nowcoder.community.entity.Comment;
 import com.nowcoder.community.entity.DiscussPost;
+import com.nowcoder.community.entity.Event;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.CommentService;
 import com.nowcoder.community.service.DiscussPostService;
@@ -45,6 +48,9 @@ public class DiscussPostController {
     private CommentService commentService;
 
     @Autowired
+    private EventProducer eventProducer;
+
+    @Autowired
     private ThreadLocalHolder<User> userThreadLocalHolder;
 
     @RequestMapping(path = "/add",method = RequestMethod.POST)
@@ -62,6 +68,16 @@ public class DiscussPostController {
         discussPost.setContent(content);
         discussPost.setCreateTime(new Date());
         discussPostService.addDiscussPost(discussPost);
+
+        // 触发发帖事件,将新发布的帖子异步同步到es服务器
+        Event event = new Event()
+                .setTopic(MessageConstant.TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityType(CommentEntityConstant.ENTITY_TYPE_POST.getType())
+                .setEntityId(discussPost.getId());
+
+        eventProducer.handleEvent(event);
+
 
         // 报错的情况在全局异常处理器中处理
         return CommonUtil.getJsonString(200,"发布成功");

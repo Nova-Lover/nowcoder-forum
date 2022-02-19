@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -153,6 +154,7 @@ public class UserController {
         }
         userService.logout(ticket);
         userThreadLocalHolder.clear();
+        SecurityContextHolder.clearContext();
         return "redirect:/user/loginPage";
     }
 
