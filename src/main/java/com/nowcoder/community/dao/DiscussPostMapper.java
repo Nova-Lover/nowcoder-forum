@@ -22,7 +22,7 @@ public interface DiscussPostMapper {
      * @param limit  每页显示的帖子条数
      * @return
      */
-    List<DiscussPost> selectDiscussPostsByPage(int userId, int offset, int limit);
+    List<DiscussPost> selectDiscussPostsByPage(int userId, int offset, int limit,int orderMode);
 
     /**
      * 查询用户发表的帖子总数
@@ -58,4 +58,28 @@ public interface DiscussPostMapper {
      * @return
      */
     List<DiscussPost> selAllDiscussPost();
+
+    /**
+     * 根据id修改帖子类型
+     * @param id
+     * @param type
+     * @return
+     */
+    int updateType(int id,int type);
+
+    /**
+     * 根据id修改帖子状态
+     * @param id
+     * @param status
+     * @return
+     */
+    int updateStatus(int id,int status);
+
+    /**
+     * 修改帖子分数
+     * @param id
+     * @param score
+     * @return
+     */
+    int updateScore(int id,double score);
 }

@@ -2,6 +2,7 @@ package com.nowcoder.community.config;
 
 import com.nowcoder.community.constant.SystemConstant;
 import com.nowcoder.community.util.CommonUtil;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,6 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.firewall.DefaultHttpFirewall;
+import org.springframework.security.web.firewall.HttpFirewall;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -37,25 +40,37 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 // 登录之后，如果含有有效的用户身份，这以下权限登录之后军具有
                 .antMatchers(
-//                "/user/settings",
-                        "/**/user/upload",
-//                        "/discuss/add/",
-//                        "/user/header",
-                        "/**/comment/add/**",
-                        "/**/message/**",
-                        "/**/like/**",
-                        "/**/follow/**"
+                "/user/settings",
+                        "/user/upload",
+                        "/user/updatePassword",
+                        "/user/mypost",
+                        "/user/myreply",
+                        "/discuss/add/",
+                        "/comment/add/**",
+                        "/message/**",
+                        "/like/**",
+                        "/follow/**"
         ).hasAnyAuthority(SystemConstant.AUTHORITY_ADMIN,
                 SystemConstant.AUTHORITY_USER,
                 SystemConstant.AUTHORITY_MODERATOR
-        ).anyRequest().permitAll();
+        ).antMatchers(
+                "/disucss/top",
+                "/discuss/fine"
+        ).hasAnyAuthority(
+                SystemConstant.AUTHORITY_MODERATOR
+        ).antMatchers(
+                "/discuss/delete",
+                "/data/**"
+        ).hasAnyAuthority(
+                SystemConstant.AUTHORITY_ADMIN
+        ).anyRequest().permitAll()
         // 默认引入spring security之后，csrf防御是默认开启的,使用此配置禁用csrf攻击防御
-//         .and().csrf().disable();
+         .and().csrf().disable();
 
         // 权限不够时的异常处理
         http.exceptionHandling()
-                // 未登录时的处理
                 .authenticationEntryPoint(new AuthenticationEntryPoint() {
+                    // 未登录时的处理
             @Override
             public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
                 String xRequestWith = request.getHeader("x-requested-with");
@@ -67,9 +82,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     response.sendRedirect(request.getContextPath()+"/user/loginPage");
                 }
             }
-        })
-                // 权限不足的处理
-                .accessDeniedHandler(new AccessDeniedHandler() {
+        }).accessDeniedHandler(new AccessDeniedHandler() {
+            // 权限不足的处理
                     @Override
                     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException e) throws IOException, ServletException {
                         String xRequestWith = request.getHeader("x-requested-with");
@@ -86,5 +100,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // security底层默认会拦截/logout请求，进行退出处理，所以覆盖默认的逻辑，才能执行我们自己的推出代码
         // logout拦截路径修改为其他路径,这样就绕过了security的退出拦截
         http.logout().logoutUrl("/security-logout");
+    }
+
+    /**
+     * 此配置允许不规范 URL 访问：解决头像显示url不规范问题
+     * @return
+     */
+    @Bean
+    public HttpFirewall httpFirewall() {
+        return new DefaultHttpFirewall();
     }
 }

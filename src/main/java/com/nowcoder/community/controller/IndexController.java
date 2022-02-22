@@ -7,13 +7,17 @@ import com.nowcoder.community.service.DiscussPostService;
 import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.service.UserService;
 
+import com.nowcoder.community.util.CommonUtil;
+import com.nowcoder.community.util.ThreadLocalHolder;
 import com.nowcoder.community.vo.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 import java.util.ArrayList;
@@ -40,11 +44,21 @@ public class IndexController {
     @Autowired
     private LikeService likeService;
 
+    @Autowired
+    private ThreadLocalHolder<User> userThreadLocalHolder;
+
+    /**
+     * 首页信息
+     * @param model 作用域对象
+     * @param pageInfo 分页对象
+     * @param orderMode 表示是否显示热度排行版
+     * @return
+     */
     @RequestMapping(path = {"/index","/"},method = RequestMethod.GET)
-    public String getIndexPage(Model model, PageInfo pageInfo){
+    public String getIndexPage(Model model, PageInfo pageInfo, @RequestParam(name = "orderMode",defaultValue = "0") int orderMode){
         pageInfo.setRows(discussPostService.findDiscussPostCount(0));
-        pageInfo.setPath("index");
-        List<DiscussPost> discussPostList = discussPostService.findDiscussPostList(0, pageInfo.getOffset(), pageInfo.getLimit());
+        pageInfo.setPath("/index?orderMode="+orderMode);
+        List<DiscussPost> discussPostList = discussPostService.findDiscussPostList(0, pageInfo.getOffset(), pageInfo.getLimit(),orderMode);
         List<Map<String,Object>> userDiscussPosts = new ArrayList<>();
         if(discussPostList!=null){
             // 迭代容器装配用户对应的帖子
@@ -61,17 +75,28 @@ public class IndexController {
 
         }
         model.addAttribute("discussPosts",userDiscussPosts);
+        model.addAttribute("orderMode",orderMode);
         return "/index";
     }
 
+    /**
+     * 返回500服务器处理错误页面
+     * @return
+     */
     @RequestMapping(path = "/error",method = RequestMethod.GET)
     public String getErrorPage(){
         return "/error/500";
     }
 
+    /**
+     * 权限不够，访问拒绝，服务器找不到资源的跳转的页面
+     * @return
+     */
     @RequestMapping(path = "/denied",method = RequestMethod.GET)
     public String getDeniedPage(){
         return "/error/404";
     }
+
+
 
 }

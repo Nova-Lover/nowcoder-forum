@@ -87,6 +87,15 @@ public class EventConsumer implements MessageConstant {
         elasticsearchService.saveDiscussPost(discussPost);
     }
 
+    @KafkaListener(topics = {MessageConstant.TOPIC_DELETE})
+    public void handleDeleteEvent(ConsumerRecord record){
+        Event event = JSONObject.parseObject(record.value().toString(), Event.class);
+        if(!checkRecord(record,event)){
+            return;
+        }
+        elasticsearchService.deleteDiscusspost(event.getEntityId());
+    }
+
     private boolean checkRecord(ConsumerRecord record,Event event){
         if(CommonUtil.isEmtpy(record) || CommonUtil.isEmtpy(record.value())){
             log.error("消息内容为空.");
@@ -99,6 +108,8 @@ public class EventConsumer implements MessageConstant {
         }
         return true;
     }
+
+
 
 
 }

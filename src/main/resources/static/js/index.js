@@ -6,12 +6,12 @@ function publish() {
 	$("#publishModal").modal("hide");
 
 	/*在请求头中设置携带csrf token*/
-	var token = $("meta[name='_csrf']").attr("content");
-	var header = $("meta[name='_csrf_header']").attr("content");
-
-	$(document).ajaxSend(function (e,xhr,options) {
-		xhr.setRequestHeader(header,token);
-	});
+	// var token = $("meta[name='_csrf']").attr("content");
+	// var header = $("meta[name='_csrf_header']").attr("content");
+	//
+	// $(document).ajaxSend(function (e,xhr,options) {
+	// 	xhr.setRequestHeader(header,token);
+	// });
 
 	// 获取标题和内容
 	var title = $("#recipient-name").val();

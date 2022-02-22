@@ -16,6 +16,17 @@ public class RedisKeyUtil {
     private static final String PREFIX_KAPTCHA="kaptcha";
     private static final String PREFIX_TICKET="ticket";
     private static final String PREFIX_USER="user";
+    private static final String PREFIX_POST="post";
+
+
+    /**
+     * 统计网站独立访客数量key
+     */
+    private static final String PREFIX_UV="uv";
+    /**
+     * 统计网站独立活跃用户数量key
+     */
+    private static final String PREFIX_UAV="uav";
 
 
     private RedisKeyUtil(){
@@ -91,6 +102,52 @@ public class RedisKeyUtil {
      */
     public static String getUserKey(int userId){
         return PREFIX_USER + SPLIT +userId;
+    }
+
+    /**
+     * 单日uv
+     * @param date
+     * @return
+     */
+    public static String getDailyUvKey(String date){
+        return PREFIX_UV + SPLIT + date;
+    }
+
+    /**
+     * 获取区间范围的uv
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public static String getRangeUv(String startDate,String endDate){
+        return PREFIX_UV + SPLIT + startDate + SPLIT + endDate;
+    }
+
+    /**
+     * 单日活跃用户
+     * @param date
+     * @return
+     */
+    public static  String getDailyDauKey(String date){
+        return PREFIX_UAV +SPLIT + date;
+    }
+
+    /**
+     * 区间活跃用户
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public static String getRangeDauKey(String startDate,String endDate){
+        return PREFIX_UAV + SPLIT + startDate + SPLIT + endDate;
+    }
+
+    /**
+     * 帖子分数
+     * @return
+     */
+    public static String getPostScoreKey(){
+        return PREFIX_POST + SPLIT + "score";
     }
 
 }

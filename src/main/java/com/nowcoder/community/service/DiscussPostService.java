@@ -32,8 +32,8 @@ public class DiscussPostService {
      * @param limit
      * @return List<DiscussPost>
      */
-    public List<DiscussPost> findDiscussPostList(int userId,int offset,int limit) {
-        return discussPostMapper.selectDiscussPostsByPage(userId,offset,limit);
+    public List<DiscussPost> findDiscussPostList(int userId,int offset,int limit,int orderMode) {
+        return discussPostMapper.selectDiscussPostsByPage(userId,offset,limit,orderMode);
     }
 
     /**
@@ -83,5 +83,29 @@ public class DiscussPostService {
      */
     public int updateCommentCount(int id,int commentCount){
         return discussPostMapper.updateCommentCount(id,commentCount);
+    }
+
+    /**
+     * 根据id修改帖子类型
+     * @param id
+     * @param type
+     * @return
+     */
+    public int updateType(int id,int type){
+        return discussPostMapper.updateType(id,type);
+    }
+
+    /**
+     * 根据id修改帖子类型
+     * @param id
+     * @param status
+     * @return
+     */
+    public int updateStatus(int id,int status){
+        return discussPostMapper.updateStatus(id,status);
+    }
+
+    public int updateScore(int id,double score){
+        return discussPostMapper.updateScore(id,score);
     }
 }

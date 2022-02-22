@@ -9,6 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
+ * 敏感词过滤器测试类
  * @author Alex
  * @version 1.0
  * @date 2022/2/6 21:03

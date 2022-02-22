@@ -10,8 +10,10 @@ import com.nowcoder.community.entity.Event;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.CommentService;
 import com.nowcoder.community.service.DiscussPostService;
+import com.nowcoder.community.util.RedisKeyUtil;
 import com.nowcoder.community.util.ThreadLocalHolder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +42,9 @@ public class CommentController {
 
     @Autowired
     private ThreadLocalHolder<User> userThreadLocalHolder;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @LoginRequired
     @RequestMapping(path = "/add/{discussPostId}",method = RequestMethod.POST)
@@ -74,6 +79,9 @@ public class CommentController {
                     .setEntityType(CommentEntityConstant.ENTITY_TYPE_POST.getType())
                     .setEntityId(discussPostId);
             eventProducer.handleEvent(event);
+            // 记录影响帖子分数帖子id
+            String postScoreKey = RedisKeyUtil.getPostScoreKey();
+            redisTemplate.opsForSet().add(postScoreKey,discussPostId);
         }
         return "redirect:/discuss/detail/" + discussPostId;
     }

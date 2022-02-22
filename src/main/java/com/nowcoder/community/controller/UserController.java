@@ -20,10 +20,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -83,6 +80,14 @@ public class UserController {
     @Autowired
     private ThreadLocalHolder<User> userThreadLocalHolder;
 
+
+    @ModelAttribute
+    public void siteAttrbute(Model model){
+        User user = userThreadLocalHolder.getCache();
+        if (!CommonUtil.isEmtpy(user)) {
+            model.addAttribute("userId",user.getId());
+        }
+    }
 
     @RequestMapping(path = "loginPage",method = RequestMethod.GET)
     public String loginPage(){
@@ -322,7 +327,7 @@ public class UserController {
         pageInfo.setRows(discussPostCount);
 
         // 查询帖子列表
-        List<DiscussPost> discussPosts = discussPostService.findDiscussPostList(user.getId(), pageInfo.getOffset(), pageInfo.getLimit());
+        List<DiscussPost> discussPosts = discussPostService.findDiscussPostList(user.getId(), pageInfo.getOffset(), pageInfo.getLimit(),0);
         model.addAttribute("discussPosts",discussPosts);
         return "/site/my-post";
     }

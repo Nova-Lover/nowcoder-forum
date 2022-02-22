@@ -2,13 +2,16 @@ package com.nowcoder.community.controller;
 
 import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.config.event.EventProducer;
+import com.nowcoder.community.constant.CommentEntityConstant;
 import com.nowcoder.community.constant.MessageConstant;
 import com.nowcoder.community.entity.Event;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.util.CommonUtil;
+import com.nowcoder.community.util.RedisKeyUtil;
 import com.nowcoder.community.util.ThreadLocalHolder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,7 +27,7 @@ import java.util.Map;
  * @date 2022/2/13 16:06
  */
 @Controller
-@RequestMapping("like")
+@RequestMapping("/like")
 public class LikeController {
 
     @Autowired
@@ -35,6 +38,9 @@ public class LikeController {
 
     @Autowired
     private ThreadLocalHolder<User> userThreadLocalHolder;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @RequestMapping(path = "/giveLike",method = RequestMethod.POST)
     @ResponseBody
@@ -64,6 +70,12 @@ public class LikeController {
                     .setEntityUserId(entityUserId)
                     .setData("postId",postId);
             eventProducer.handleEvent(event);
+        }
+
+        if (entityType == CommentEntityConstant.ENTITY_TYPE_POST.getType()){
+            // 记录影响帖子分数帖子id
+            String postScoreKey = RedisKeyUtil.getPostScoreKey();
+            redisTemplate.opsForSet().add(postScoreKey,postId);
         }
 
         return CommonUtil.getJsonString(0,null,map);

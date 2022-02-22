@@ -13,9 +13,11 @@ import com.nowcoder.community.service.DiscussPostService;
 import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CommonUtil;
+import com.nowcoder.community.util.RedisKeyUtil;
 import com.nowcoder.community.util.ThreadLocalHolder;
 import com.nowcoder.community.vo.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,6 +53,9 @@ public class DiscussPostController {
     private EventProducer eventProducer;
 
     @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Autowired
     private ThreadLocalHolder<User> userThreadLocalHolder;
 
     @RequestMapping(path = "/add",method = RequestMethod.POST)
@@ -77,6 +82,10 @@ public class DiscussPostController {
                 .setEntityId(discussPost.getId());
 
         eventProducer.handleEvent(event);
+
+        // 计算帖子分数
+        String postScoreKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(postScoreKey,discussPost.getId());
 
 
         // 报错的情况在全局异常处理器中处理
@@ -164,6 +173,88 @@ public class DiscussPostController {
         model.addAttribute("comments",commentVoList);
 
         return "site/discuss-detail";
+    }
+
+    /**
+     * 帖子置顶
+     * @param id
+     * @return
+     */
+    @RequestMapping(path = "/top",method = RequestMethod.POST)
+    @ResponseBody
+    public String setTop(int id){
+        User user = userThreadLocalHolder.getCache();
+        if(CommonUtil.isEmtpy(user)){
+            return CommonUtil.getJsonString(403,"你还没有登录哦!");
+        }
+        // 1 帖子状态置顶
+        discussPostService.updateType(id,1);
+
+        // 触发一次发帖事件，异步同步到es服务器中，使得能够搜索到最新的帖子
+        Event event = new Event()
+                .setTopic(MessageConstant.TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityType(CommentEntityConstant.ENTITY_TYPE_POST.getType())
+                .setEntityId(id);
+
+        eventProducer.handleEvent(event);
+        return CommonUtil.getJsonString(0);
+    }
+
+    /**
+     * 帖子置顶
+     * @param id
+     * @return
+     */
+    @RequestMapping(path = "/fine",method = RequestMethod.POST)
+    @ResponseBody
+    public String setFine(int id){
+        User user = userThreadLocalHolder.getCache();
+        if(CommonUtil.isEmtpy(user)){
+            return CommonUtil.getJsonString(403,"你还没有登录哦!");
+        }
+        // 1 帖子状态置顶
+        discussPostService.updateStatus(id,1);
+
+        // 触发一次发帖事件，异步同步到es服务器中，使得能够搜索到最新的帖子
+        Event event = new Event()
+                .setTopic(MessageConstant.TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityType(CommentEntityConstant.ENTITY_TYPE_POST.getType())
+                .setEntityId(id);
+
+        eventProducer.handleEvent(event);
+        // 记录影响帖子分数帖子id
+        String postScoreKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(postScoreKey,id);
+        return CommonUtil.getJsonString(0);
+    }
+
+    /**
+     * 帖子拉黑/删除
+     * @param id
+     * @return
+     */
+    @RequestMapping(path = "/delete",method = RequestMethod.POST)
+    @ResponseBody
+    public String setDelete(int id){
+        User user = userThreadLocalHolder.getCache();
+        if(CommonUtil.isEmtpy(user)){
+            return CommonUtil.getJsonString(403,"你还没有登录哦!");
+        }
+        // 2 帖子状态删除
+        discussPostService.updateStatus(id,2);
+
+        // 触发一次发帖事件，异步同步到es服务器中，使得能够搜索到最新的帖子
+        Event event = new Event()
+                .setTopic(MessageConstant.TOPIC_DELETE)
+                .setUserId(user.getId())
+                .setEntityType(CommentEntityConstant.ENTITY_TYPE_POST.getType())
+                .setEntityId(id);
+
+        eventProducer.handleEvent(event);
+
+        return CommonUtil.getJsonString(0);
     }
 
 }
