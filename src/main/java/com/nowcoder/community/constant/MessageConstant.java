@@ -31,4 +31,9 @@ public interface MessageConstant {
      * 主题：删帖
      */
     String TOPIC_DELETE = "delete";
+
+    /**
+     * 主图：分享
+     */
+    String TOPIC_SHARE = "share";
 }

@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * 网站工具类
+ * 网站通用工具类
  * @author Alex
  * @version 1.0
  * @date 2022/2/2 12:19

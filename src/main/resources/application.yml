@@ -123,4 +123,32 @@ community:
 # 配置文件上传位置
     upload: d:/work/data/upload
 
-debug: true
+# wk
+wk:
+  image:
+    command: d:/software/wkhtmltopdf/bin/wkhtmltoimage
+    storage: d:/work/data/wk-images/
+
+#七牛云储存配置
+qiniu:
+  key:
+    #访问密钥
+    access: 6RA-Uus95ZT_1znMrCMD8BpqfjT-K7OKmQTfKB48
+    secret: kPNnLFz2_tzztKUVpSLm0lYngtuHWyIq5LzTmLIL
+  bucket:
+    #存储空间配置
+    header:
+      name: community_header
+      url: http://pvghrij81.bkt.clouddn.com
+    share:
+      name: community_share
+      url: http://pvghvvuzm.bkt.clouddn.com
+
+#caffeine
+caffeine:
+  posts:
+    #缓存大小
+    max-size: 15
+    #过期时间，3分钟缓存清除
+    #缓存数据淘汰策略：一是主动淘汰(数据变化，缓存数据清除)，二是定时淘汰
+    expire-seconds: 180

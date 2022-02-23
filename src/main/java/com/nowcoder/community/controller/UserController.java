@@ -12,6 +12,8 @@ import com.nowcoder.community.util.CommonUtil;
 import com.nowcoder.community.util.RedisKeyUtil;
 import com.nowcoder.community.util.ThreadLocalHolder;
 import com.nowcoder.community.vo.PageInfo;
+import com.qiniu.util.Auth;
+import com.qiniu.util.StringMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +69,18 @@ public class UserController {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Value("${qiniu.key.access}")
+    private String accessKey;
+
+    @Value("${qiniu.key.secret}")
+    private String secretKey;
+
+    @Value("${qiniu.bucket.header.name}")
+    private String headerBucketName;
+
+    @Value("${qiniu.bucket.header.url}")
+    private String headerBucketUrl;
 
     @Value("${server.servlet.context-path}")
     private String contextPath;
@@ -213,12 +227,49 @@ public class UserController {
 
     @LoginRequired
     @RequestMapping(path = "/settings",method = RequestMethod.GET)
-    public String getSettingsPage(){
+    public String getSettingsPage(Model model){
+
+        // 上传文件名称 -> 目的：服务器缓存无效，上传历史保留
+        String fileName = CommonUtil.generateUUID();
+
+        // 设置响应信息
+        StringMap policy = new StringMap();
+        policy.put("returnBody", CommonUtil.getJsonString(0,"生成成功"));
+
+        // 生成七牛云上传凭证
+        Auth auth = Auth.create(accessKey, secretKey);
+        String uploadToken = auth.uploadToken(headerBucketName, fileName, 3600, policy);
+
+        model.addAttribute("uploadToken",uploadToken);
+        model.addAttribute("fileName",fileName);
+
         return "site/setting";
     }
 
+    /**
+     * 更新头像路径(异步访问)：
+     *      更新为七牛云服务器的路径
+     * @param fileName
+     * @return
+     */
+    @RequestMapping(path = "/header/url",method = RequestMethod.POST)
+    @ResponseBody
+    public String updateHeaderUrl(String fileName){
+        if (StringUtils.isBlank(fileName)){
+            return CommonUtil.getJsonString(1,"文件名不能为空");
+        }
+
+        String url = headerBucketUrl + "/" + fileName;
+
+        userService.updateHeader(userThreadLocalHolder.getCache().getId(),url);
+
+        return CommonUtil.getJsonString(0,"success");
+    }
+
+
     @LoginRequired
     @RequestMapping(path = "/upload",method = RequestMethod.POST)
+    @Deprecated
     public String uploadHeader(MultipartFile headerImg,Model model){
         if(CommonUtil.isEmtpy(headerImg)){
             model.addAttribute("error","您还没有上传头像");
