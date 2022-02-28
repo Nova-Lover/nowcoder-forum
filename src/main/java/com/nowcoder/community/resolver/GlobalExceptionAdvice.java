@@ -1,6 +1,10 @@
 package com.nowcoder.community.resolver;
 
+import com.nowcoder.community.constant.ResultEnum;
+import com.nowcoder.community.exception.CustomizeException;
 import com.nowcoder.community.util.CommonUtil;
+import com.nowcoder.community.util.ResultVoUtil;
+import com.nowcoder.community.vo.ResultVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -10,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Objects;
 
 /**
  * 全局异常处理类
@@ -20,6 +25,8 @@ import java.io.PrintWriter;
 @ControllerAdvice(annotations = Controller.class)
 @Slf4j
 public class GlobalExceptionAdvice {
+
+    public static final String XML_HTTP_REQUEST = "XMLHttpRequest";
 
     /**
      * 处理controller方法中出现的所有异常，统一记录日志，并且重定向到相应的错误页面
@@ -35,7 +42,7 @@ public class GlobalExceptionAdvice {
         }
 
         String xRequestWith = request.getHeader("x-requested-with");
-        if("XMLHttpRequest".equals(xRequestWith)){
+        if(XML_HTTP_REQUEST.equals(xRequestWith)){
             response.setContentType("application/json;charset=utf-8");
             PrintWriter writer = null;
             try {
@@ -55,5 +62,14 @@ public class GlobalExceptionAdvice {
                 ex.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 自定义异常处理
+     */
+    @ExceptionHandler(value = CustomizeException.class)
+    public ResultVo processCustomizeException(CustomizeException e) {
+        log.error("位置:{} -> 错误信息:{}", e.getMethod() ,e.getLocalizedMessage());
+        return ResultVoUtil.error(Objects.requireNonNull(ResultEnum.getByCode(e.getCode())));
     }
 }

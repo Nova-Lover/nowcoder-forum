@@ -1,7 +1,6 @@
 package com.nowcoder.community.thread;
 
 import com.nowcoder.community.CommunityApplication;
-import com.nowcoder.community.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,8 +31,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class ThreadPoolTest {
 
-    @Autowired
-    private TaskService taskService;
 
     // JDK普通线程池
     /**
@@ -130,7 +127,7 @@ public class ThreadPoolTest {
     @Test
     public void testThreadPoolTaskExecutorSimpleWay(){
         for (int i = 0; i < 3; i++) {
-            taskService.executeTask();
+            // taskService.executeTask();
         }
     }
 

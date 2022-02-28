@@ -43,11 +43,11 @@ public class DiscussPostScoreRefreshJob implements Job {
     @Autowired
     private ElasticsearchService elasticsearchService;
 
-    private static final Date epoch;
+    private static final Date EPOCH;
 
     static {
         try {
-            epoch = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2014-08-01 00:00:00");
+            EPOCH = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2014-08-01 00:00:00");
         } catch (ParseException e) {
             throw new RuntimeException("初始化牛科纪元失败!",e);
         }
@@ -96,7 +96,7 @@ public class DiscussPostScoreRefreshJob implements Job {
         double w = (isFine?75:0) + commentCount * 10 + likeCount * 2;
 
         // 分数 = 帖子权重 + 距离天数
-        double score = Math.log10(Math.max(w,1)) + (discussPost.getCreateTime().getTime() - epoch.getTime()) / (1000 * 3600 * 24);
+        double score = Math.log10(Math.max(w,1)) + (discussPost.getCreateTime().getTime() - EPOCH.getTime()) / (1000 * 3600 * 24);
         // 更新帖子分数
         discussPostService.updateScore(postId,score);
 

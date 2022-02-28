@@ -56,7 +56,7 @@ public class SearchController {
         List<Map<String,Object>> discussPosts = new ArrayList<>();
         if(!CommonUtil.isEmtpy(searchResultPage)){
             for (DiscussPost discussPost : searchResultPage) {
-                Map<String,Object> map = new HashMap<>();
+                Map<String,Object> map = new HashMap<>(16);
                 // 帖子数据
                 map.put("post",discussPost);
                 // 用户数据

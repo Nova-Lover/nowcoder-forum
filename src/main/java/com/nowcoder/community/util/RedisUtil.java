@@ -84,14 +84,21 @@ public final class RedisUtil {
         }
     }
 
-    //第一次加载的时候将数据加载到redis中
+    /**
+     * 第一次加载的时候将数据加载到redis中
+     * @param name
+     */
     public void saveDataToRedis(String name) {
         double index = Math.abs(name.hashCode() % size);
         long indexLong = new Double(index).longValue();
         boolean availableUsers = setBit("availableUsers", indexLong, true);
     }
 
-    //第一次加载的时候将数据加载到redis中
+    /**
+     * 第一次加载的时候将数据加载到redis中
+     * @param name
+     * @return
+     */
     public boolean getDataToRedis(String name) {
 
         double index = Math.abs(name.hashCode() % size);
@@ -456,8 +463,9 @@ public final class RedisUtil {
     public long sSetAndTime(String key, long time, Object... values) {
         try {
             Long count = redisTemplate.opsForSet().add(key, values);
-            if (time > 0)
+            if (time > 0){
                 expire(key, time);
+            }
             return count;
         } catch (Exception e) {
             e.printStackTrace();
@@ -575,8 +583,9 @@ public final class RedisUtil {
     public boolean lSet(String key, Object value, long time) {
         try {
             redisTemplate.opsForList().rightPush(key, value);
-            if (time > 0)
+            if (time > 0){
                 expire(key, time);
+            }
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -616,8 +625,9 @@ public final class RedisUtil {
     public boolean lSet(String key, List<Object> value, long time) {
         try {
             redisTemplate.opsForList().rightPushAll(key, value);
-            if (time > 0)
+            if (time > 0){
                 expire(key, time);
+            }
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -739,7 +749,7 @@ public final class RedisUtil {
      * 有序集合获取排名
      * @param key
      */
-    public Set<ZSetOperations.TypedTuple<Object>> reverseZRankWithScore(String key, long start,long end) {
+    public Set<ZSetOperations.TypedTuple<Object>> reverseZSetRankWithScore(String key, long start,long end) {
         ZSetOperations<String, Object> zSet = redisTemplate.opsForZSet();
         Set<ZSetOperations.TypedTuple<Object>> ret = zSet.reverseRangeByScoreWithScores(key,start,end);
         return ret;
@@ -749,7 +759,7 @@ public final class RedisUtil {
      * 有序集合获取排名
      * @param key
      */
-    public Set<ZSetOperations.TypedTuple<Object>> reverseZRankWithRank(String key, long start, long end) {
+    public Set<ZSetOperations.TypedTuple<Object>> reverseZSetRankWithRank(String key, long start, long end) {
         ZSetOperations<String, Object> zSet = redisTemplate.opsForZSet();
         Set<ZSetOperations.TypedTuple<Object>> ret = zSet.reverseRangeWithScores(key, start, end);
         return ret;

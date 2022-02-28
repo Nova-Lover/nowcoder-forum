@@ -15,6 +15,7 @@ import java.util.Date;
 
 /**
  * 服务层日志切面
+ *
  * @author Alex
  * @version 1.0
  * @date 2022/2/14 12:11
@@ -25,16 +26,16 @@ import java.util.Date;
 public class ServiceLogAspect {
 
     @Pointcut("execution(* com.nowcoder.community.service.*.*(..))")
-    public void pointCut(){
+    public void pointCut() {
 
     }
 
     @Before("pointCut()")
-    public void before(JoinPoint joinPoint){
-        // 用户IP地址[1.2.3.4]在{time},访问了com.nowcoder.community.service.*.*(..)
-        // 用户IP地址
+    public void before(JoinPoint joinPoint) {
+        //用户IP地址[1.2.3.4]在{time},访问了com.nowcoder.community.service.*.*(..)
+        //用户IP地址
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if(CommonUtil.isEmtpy(requestAttributes)){
+        if (CommonUtil.isEmtpy(requestAttributes)) {
             return;
         }
         HttpServletRequest request = requestAttributes.getRequest();
@@ -45,7 +46,7 @@ public class ServiceLogAspect {
         // 目标方法
         String target = joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName();
 
-        log.info("用户{},在{},访问了{}.",ip,now,target);
+        log.info("用户{},在{},访问了{}.", ip, now, target);
     }
 
 }

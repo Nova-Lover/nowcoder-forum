@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class DiscussPostService {
 
+
     @Autowired
     private DiscussPostMapper discussPostMapper;
 
@@ -51,9 +52,12 @@ public class DiscussPostService {
      */
     private LoadingCache<Integer,Integer> postRowsCache;
 
+    public static final int SPLIT_SIZE = 2;
+
     @PostConstruct
     public void init(){
         // 本地缓存(一级缓存)
+
         // 初始化帖子列表缓存
         postListCache = Caffeine.newBuilder()
                 .maximumSize(maxSize)
@@ -67,7 +71,8 @@ public class DiscussPostService {
                         }
 
                         String[] params = key.split(":");
-                        if (params==null||params.length!=2){
+
+                        if (params==null||params.length!=SPLIT_SIZE){
                             throw new IllegalArgumentException("参数错误!");
                         }
 

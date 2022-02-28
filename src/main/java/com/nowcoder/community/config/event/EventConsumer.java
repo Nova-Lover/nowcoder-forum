@@ -19,7 +19,6 @@ import com.qiniu.util.Auth;
 import com.qiniu.util.StringMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.omg.SendingContext.RunTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -32,7 +31,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
 
 /**
  * 事件消费者:
@@ -72,6 +70,9 @@ public class EventConsumer implements MessageConstant {
     @Autowired
     private ThreadPoolTaskScheduler taskScheduler;
 
+    public final String JSON_DATA_KEY = "code";
+    public final String JSON_DATA_VALUE = "0";
+
 
     /**
      * 一个方法可以消费kafka多个topic，一个topic可以被多个方法消费
@@ -92,7 +93,7 @@ public class EventConsumer implements MessageConstant {
         message.setCreateTime(new Date());
         message.setStatus(0);
 
-        Map<String,Object> map = new HashMap<>();
+        Map<String,Object> map = new HashMap<>(16);
         map.put("userId",event.getUserId());
         map.put("entityType",event.getEntityType());
         map.put("entityId",event.getEntityId());
@@ -186,17 +187,29 @@ public class EventConsumer implements MessageConstant {
 
     class UploadTask implements Runnable {
 
-        // 文件名称
+        /**
+         * 文件名称
+         */
         private String fileName;
 
-        // 文件后缀
+        /**
+         * 文件后缀
+         */
         private String suffix;
 
-        // 启动任务的返回值，用于停止定时器
+        /**
+         * 启动任务的返回值，用于停止定时器
+         */
         private Future future;
 
+        /**
+         * 开始上传时间
+         */
         private long startTime;
 
+        /**
+         * 上传次数
+         */
         private int uploadTimes;
 
         public void setFuture(Future future) {
@@ -213,14 +226,14 @@ public class EventConsumer implements MessageConstant {
         public void run() {
             // 极端情况，强制关闭定时器
             // 生成图片失败
-            if (System.currentTimeMillis() - startTime > 30000) {
+            if (System.currentTimeMillis() - startTime > SystemConstant.UPLOAD_MILLISECONDS) {
                 log.error("执行时间过程，终止任务:"+ fileName);
                 future.cancel(true);
                 return;
             }
 
             // 上传七牛云失败
-            if (uploadTimes >= 3) {
+            if (uploadTimes >= SystemConstant.UPLOAD_TIMES) {
                 log.error("上传次数过多,终止任务："+ fileName);
                 future.cancel(true);
                 return;
@@ -230,10 +243,11 @@ public class EventConsumer implements MessageConstant {
             File file = new File(path);
 
             if (file.exists()) {
-                log.info(String .format("开始地%d次上传[%s].",++uploadTimes,fileName));
+                log.info(String .format("开始第%d次上传[%s].",++uploadTimes,fileName));
                 // 设置响应信息
                 StringMap policy = new StringMap();
                 policy.put("returnBody",CommonUtil.getJsonString(0));
+
                 // 生成上传凭证
                 Auth auth = Auth.create(accessKey,secretKey);
                 String uploadToken = auth.uploadToken(shareBucketName, fileName, 3600, policy);
@@ -248,7 +262,9 @@ public class EventConsumer implements MessageConstant {
                     // 处理响应结果
                     JSONObject jsonData = JSONObject.parseObject(response.bodyString());
 
-                    if (CommonUtil.isEmtpy(jsonData) || jsonData.get("code")==null||!jsonData.get("code").equals("0")) {
+
+
+                    if (CommonUtil.isEmtpy(jsonData) || jsonData.get(JSON_DATA_KEY)==null||!JSON_DATA_VALUE.equals(jsonData.get(JSON_DATA_KEY))) {
                         log.info(String.format("第%d次上传失败[%s].",uploadTimes,fileName));
                     }else{
                         log.info(String.format("第%d次上传成功[%s].",uploadTimes,fileName));

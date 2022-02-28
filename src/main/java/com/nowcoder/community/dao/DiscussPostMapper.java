@@ -20,6 +20,7 @@ public interface DiscussPostMapper {
      * @param userId 用户ID
      * @param offset 帖子分页起始条数
      * @param limit  每页显示的帖子条数
+     * @param orderMode 是否是显示热门帖子
      * @return
      */
     List<DiscussPost> selectDiscussPostsByPage(int userId, int offset, int limit,int orderMode);

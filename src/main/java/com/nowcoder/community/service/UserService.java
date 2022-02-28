@@ -3,10 +3,8 @@ package com.nowcoder.community.service;
 import com.nowcoder.community.config.MailClientConfig;
 import com.nowcoder.community.constant.ActivationStatus;
 import com.nowcoder.community.constant.SystemConstant;
-import com.nowcoder.community.dao.LoginTicketMapper;
 import com.nowcoder.community.dao.UserMapper;
 import com.nowcoder.community.entity.LoginTicket;
-import com.nowcoder.community.entity.ReplyInfo;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.util.CommonUtil;
 import com.nowcoder.community.util.RedisKeyUtil;
@@ -34,8 +32,6 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
-//    @Autowired
-//    private LoginTicketMapper loginTicketMapper;
     @Autowired
     private RedisTemplate redisTemplate;
 
@@ -57,7 +53,6 @@ public class UserService {
      * @return
      */
     public User findUserById(int id){
-//        return userMapper.selectById(id);
         User user = getUserCache(id);
         if(CommonUtil.isEmtpy(user)){
             user = initCache(id);
@@ -71,7 +66,7 @@ public class UserService {
      * @return
      */
     public Map<String,Object> register(User user){
-        Map<String,Object> map = new HashMap<>();
+        Map<String,Object> map = new HashMap<>(10);
         if(user==null){
             throw new IllegalArgumentException("用户信息不能为空");
         }
@@ -160,7 +155,7 @@ public class UserService {
      * @return
      */
     public Map<String, Object> login(String username,String password,int expiredSeconds){
-        Map<String,Object> map = new HashMap<>();
+        Map<String,Object> map = new HashMap<>(10);
 
         // 空值处理
         if(StringUtils.isBlank(username)){
@@ -199,7 +194,6 @@ public class UserService {
         loginTicket.setTicket(CommonUtil.generateUUID());
         loginTicket.setStatus(0);
         loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000));
-//        loginTicketMapper.insertLoginTicket(loginTicket);
 
         String ticketKey = RedisKeyUtil.getTicketKey(loginTicket.getTicket());
         redisTemplate.opsForValue().set(ticketKey,loginTicket);
@@ -213,7 +207,6 @@ public class UserService {
      * @param ticket
      */
     public void logout(String ticket){
-//        loginTicketMapper.updateStatus(ticket,1);
         String ticketKey = RedisKeyUtil.getTicketKey(ticket);
         LoginTicket loginTicket = (LoginTicket) redisTemplate.opsForValue().get(ticketKey);
         loginTicket.setStatus(1);

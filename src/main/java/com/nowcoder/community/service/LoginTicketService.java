@@ -1,6 +1,5 @@
 package com.nowcoder.community.service;
 
-import com.nowcoder.community.dao.LoginTicketMapper;
 import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +15,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoginTicketService {
 
-//    @Autowired
-//    private LoginTicketMapper loginTicketMapper;
 
     @Autowired
     private RedisTemplate redisTemplate;

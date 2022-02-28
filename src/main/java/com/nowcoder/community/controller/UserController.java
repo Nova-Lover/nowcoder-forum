@@ -136,8 +136,6 @@ public class UserController {
     @RequestMapping(path = "login",method = RequestMethod.POST)
     public String login(Model model,/*HttpSession session,*/HttpServletResponse response,
                         String username,String password,String verifyCode,boolean rememberMe,@CookieValue("kaptchaOwner") String kaptchaOwner){
-        // 检查验证码
-        //String kaptcha = (String) session.getAttribute("kaptcha");
         String kaptcha=null;
         if(StringUtils.isNotBlank(kaptchaOwner)){
             String kaptchaKey = RedisKeyUtil.getKaptchaKey(kaptchaOwner);
@@ -151,7 +149,7 @@ public class UserController {
         // 检查账号，密码
         int expiredSeconds = rememberMe ? LoginConstant.REMEMBERME_EXPIRED_SECONDS.getExpired():LoginConstant.DEFAULT_EXPIRED_SECONDS.getExpired();
         Map<String, Object> map = userService.login(username, password, expiredSeconds);
-        if(map.containsKey("ticket")){
+        if(map.containsKey(SystemConstant.USER_CREDENTIAL_TICKET)){
             Cookie cookie = new Cookie("ticket", map.get("ticket").toString());
             cookie.setPath(contextPath);
             cookie.setMaxAge(expiredSeconds);
@@ -201,8 +199,6 @@ public class UserController {
         String text = kaptchaProducer.createText();
         BufferedImage image = kaptchaProducer.createImage(text);
 
-        // 将验证码存入session
-        // session.setAttribute("kaptcha",text);
 
         // 验证码归属者,每次刷新验证码，为客户端用户生成临时凭证返回给用户,其中临时凭证存放在cookie中
         String kaptchaOwner = CommonUtil.generateUUID();

@@ -28,7 +28,7 @@ public class DataService {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM-dd");
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     /**
      * 将指定的ip记录uv

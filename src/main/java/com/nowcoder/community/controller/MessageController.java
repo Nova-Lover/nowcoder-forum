@@ -58,7 +58,7 @@ public class MessageController {
         List<Map<String, Object>> conversations = new ArrayList<>();
         if (!CommonUtil.isEmtpy(conversationList)) {
             for (Message message : conversationList) {
-                Map<String, Object> map = new HashMap<>();
+                Map<String, Object> map = new HashMap<>(10);
                 map.put("conversation", message);
                 map.put("letterCount", messageService.findLetterCount(message.getConversationId()));
                 map.put("unreadCount", messageService.findLetterUnreadCount(user.getId(), message.getConversationId()));
@@ -92,7 +92,7 @@ public class MessageController {
         List<Map<String, Object>> letters = new ArrayList<>();
         if (!CommonUtil.isEmtpy(letterList)) {
             for (Message message : letterList) {
-                Map<String, Object> map = new HashMap<>();
+                Map<String, Object> map = new HashMap<>(10);
                 map.put("letter", message);
                 map.put("fromUser", userService.findUserById(message.getFromId()));
                 letters.add(map);
@@ -223,7 +223,7 @@ public class MessageController {
      * @return
      */
     private Map<String, Object> getNotice(Message notice, User user,String topic) {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(10);
         if (!CommonUtil.isEmtpy(notice)) {
             map.put("message", notice);
             String content = HtmlUtils.htmlUnescape(notice.getContent());
@@ -256,7 +256,7 @@ public class MessageController {
         List<Map<String, Object>> noticeVoList = new ArrayList<>();
         if (!CommonUtil.isEmtpy(noticeList)) {
             for (Message notice : noticeList) {
-                Map<String, Object> map = new HashMap<>();
+                Map<String, Object> map = new HashMap<>(10);
                 // 通知
                 map.put("notice", notice);
 

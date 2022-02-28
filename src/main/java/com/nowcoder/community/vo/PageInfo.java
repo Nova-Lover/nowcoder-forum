@@ -27,6 +27,8 @@ public class PageInfo {
     private String path;
     private int total;
 
+    public static final int MAX_LIMIT_SIZE = 100;
+
     public int getCurrent() {
         return current;
     }
@@ -42,7 +44,7 @@ public class PageInfo {
     }
 
     public void setLimit(int limit) {
-        if(limit>=1&&limit<=100){
+        if(limit>=1&&limit<=MAX_LIMIT_SIZE){
             this.limit = limit;
         }
     }

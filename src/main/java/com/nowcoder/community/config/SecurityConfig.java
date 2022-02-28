@@ -28,6 +28,9 @@ import java.io.PrintWriter;
  */
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    public static final String XML_HTTP_REQUEST = "XMLHttpRequest";
+
     @Override
     public void configure(WebSecurity web) throws Exception {
         // 忽略对静态资源的拦截 /resources/下静态资源都是直接访问，不用拦截
@@ -74,7 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             @Override
             public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
                 String xRequestWith = request.getHeader("x-requested-with");
-                if ("XMLHttpRequest".equals(xRequestWith)){
+                if (XML_HTTP_REQUEST.equals(xRequestWith)){
                     response.setContentType("application/plain;charset=utf-8");
                     PrintWriter writer = response.getWriter();
                     writer.write(CommonUtil.getJsonString(403,"你还没有登录哦！"));
@@ -87,7 +90,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     @Override
                     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException e) throws IOException, ServletException {
                         String xRequestWith = request.getHeader("x-requested-with");
-                        if ("XMLHttpRequest".equals(xRequestWith)){
+                        if (XML_HTTP_REQUEST.equals(xRequestWith)){
                             response.setContentType("application/plain;charset=utf-8");
                             PrintWriter writer = response.getWriter();
                             writer.write(CommonUtil.getJsonString(403,"你没有访问此功能的权限"));

@@ -68,7 +68,7 @@ public class ShareController {
         eventProducer.handleEvent(event);
 
         // 返回访问路径
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(16);
 //        String url = domain + contextPath + "/share/image/" + fileName;
         map.put("shareUrl",shareBucketUrl + "/" + fileName);
 

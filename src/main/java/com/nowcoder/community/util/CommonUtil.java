@@ -123,7 +123,7 @@ public class CommonUtil {
 
 
     public static void main(String[] args) {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(10);
         map.put("name","zhangsan");
         map.put("age",25);
         System.out.println(getJsonString(0,"操作成功",map));

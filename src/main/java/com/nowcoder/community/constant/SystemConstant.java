@@ -28,4 +28,20 @@ public interface SystemConstant {
      */
     String AUTHORITY_MODERATOR="moderator";
 
+    /**
+     * 上传毫秒数
+     */
+    long UPLOAD_MILLISECONDS = 30000;
+
+    /**
+     * 上传次数
+     */
+    int UPLOAD_TIMES = 3;
+
+    /**
+     * 请求中的用户凭证字符串
+     */
+    String USER_CREDENTIAL_TICKET = "ticket";
+
+
 }

@@ -34,40 +34,6 @@ public class QuartzConfig {
      * 配置JobDetail:初始化JobDetailFactoryBean，实现简化JobDetail实例化过程
      * @return
      */
-//    @Bean
-    public JobDetailFactoryBean jobDetailFactoryBean(){
-        JobDetailFactoryBean factoryBean = new JobDetailFactoryBean();
-        factoryBean.setJobClass(SimpleJob.class);
-        factoryBean.setName("SimpleJob");
-        factoryBean.setGroup("SimpleJobGroup");
-        // 任务是否长久保存
-        factoryBean.setDurability(true);
-        // 任务是否可恢复
-        factoryBean.setRequestsRecovery(true);
-        return factoryBean;
-    }
-
-    /**
-     * 配置Trigger(SimpleTriggerFactoryBean,CronTriggerFactoryBean)
-     *      SimpleTriggerFactoryBean：简单触发器工厂bean 触发方式：每隔多少时间做一次任务
-     *      CronTriggerFactoryBean:复杂~,使用cron表达式执行定时任务：在某个特定时间点执行任务
-     * @param jobDetailFactoryBean
-     * @return
-     */
-//    @Bean
-    public SimpleTriggerFactoryBean getSimpleTriggerFactoryBean(JobDetail jobDetailFactoryBean){
-        SimpleTriggerFactoryBean simpleTriggerFactoryBean = new SimpleTriggerFactoryBean();
-        simpleTriggerFactoryBean.setJobDetail(jobDetailFactoryBean);
-        simpleTriggerFactoryBean.setName("SimpleTrigger");
-        // 执行频率
-        simpleTriggerFactoryBean.setRepeatInterval(3000);
-        simpleTriggerFactoryBean.setGroup("SimpleTriggerGroup");
-        // JobDataMap存储job的状态
-        simpleTriggerFactoryBean.setJobDataMap(new JobDataMap());
-
-        return simpleTriggerFactoryBean;
-    }
-
     @Bean
     public JobDetailFactoryBean discussPostScoreRefreshJobDetailFactoryBean(){
         JobDetailFactoryBean factoryBean = new JobDetailFactoryBean();
@@ -81,6 +47,13 @@ public class QuartzConfig {
         return factoryBean;
     }
 
+    /**
+     * 配置Trigger(SimpleTriggerFactoryBean,CronTriggerFactoryBean)
+     *      SimpleTriggerFactoryBean：简单触发器工厂bean 触发方式：每隔多少时间做一次任务
+     *      CronTriggerFactoryBean:复杂~,使用cron表达式执行定时任务：在某个特定时间点执行任务
+     * @param discussPostScoreRefreshJobDetailFactoryBean
+     * @return
+     */
     @Bean
     public SimpleTriggerFactoryBean getDiscussPostScoreRefreshTriggerFactoryBean(JobDetail discussPostScoreRefreshJobDetailFactoryBean){
         SimpleTriggerFactoryBean discussPostScoreRefreshTriggerFactoryBean = new SimpleTriggerFactoryBean();

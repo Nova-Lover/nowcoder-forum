@@ -125,7 +125,7 @@ public class DiscussPostController {
         if(!CommonUtil.isEmtpy(commentList)){
             for (Comment comment:commentList){
                 // 一个评论的VO
-                Map<String,Object> commentVo = new HashMap<>();
+                Map<String,Object> commentVo = new HashMap<>(10);
                 // 评论
                 commentVo.put("comment",comment);
                 // 评论作者
@@ -142,7 +142,7 @@ public class DiscussPostController {
                 List<Map<String,Object>> replyVoList = new ArrayList<>();
                 if(!CommonUtil.isEmtpy(replyList)){
                     for(Comment reply:replyList){
-                        Map<String,Object> replyVo = new HashMap<>();
+                        Map<String,Object> replyVo = new HashMap<>(10);
                         // 回复
                         replyVo.put("reply",reply);
                         // 作者

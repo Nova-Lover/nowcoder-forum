@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @date 2022/2/21 14:55
  */
 @Configuration
-@EnableScheduling // 启用spring定时任务
-@EnableAsync // 启用线程异步执行任务
+@EnableScheduling
+@EnableAsync
 public class ThreadPoolConfig {
 }

@@ -63,7 +63,7 @@ public class IndexController {
         if(discussPostList!=null){
             // 迭代容器装配用户对应的帖子
             for (DiscussPost discussPost : discussPostList) {
-                Map<String,Object> map = new HashMap<>();
+                Map<String,Object> map = new HashMap<>(16);
                 map.put("post",discussPost);
                 User user = userService.findUserById(discussPost.getUserId());
                 map.put("user",user);
