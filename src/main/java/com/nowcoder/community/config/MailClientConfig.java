@@ -33,6 +33,7 @@ public class MailClientConfig {
      * @param subject
      * @param content
      */
+    @Async(value = "taskExecutor")
     public void sendMail(String to,String subject,String content){
         try {
             MimeMessage message = mailSender.createMimeMessage();
