@@ -1,6 +1,7 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.service.DataService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import java.util.Date;
  */
 @Controller
 @RequestMapping("/data")
+@Api(tags = "数据管理接口")
 public class DataController {
 
     @Autowired

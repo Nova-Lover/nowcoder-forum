@@ -14,6 +14,8 @@ import com.nowcoder.community.util.ThreadLocalHolder;
 import com.nowcoder.community.vo.PageInfo;
 import com.qiniu.util.Auth;
 import com.qiniu.util.StringMap;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +49,7 @@ import java.util.concurrent.TimeUnit;
 @Controller
 @RequestMapping("user")
 @Slf4j
+@Api(tags = "用户相关接口")
 public class UserController {
 
     @Autowired
@@ -250,6 +253,7 @@ public class UserController {
      */
     @RequestMapping(path = "/header/url",method = RequestMethod.POST)
     @ResponseBody
+    @ApiOperation(value = "更新头像url地址")
     public String updateHeaderUrl(String fileName){
         if (StringUtils.isBlank(fileName)){
             return CommonUtil.getJsonString(1,"文件名不能为空");

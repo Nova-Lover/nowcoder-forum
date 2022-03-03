@@ -7,6 +7,7 @@ import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.service.es.ElasticsearchService;
 import com.nowcoder.community.util.CommonUtil;
 import com.nowcoder.community.vo.PageInfo;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -27,6 +28,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/search")
+@Api(tags = "搜索功能接口")
 public class SearchController {
 
     @Autowired

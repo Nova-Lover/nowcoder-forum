@@ -10,6 +10,8 @@ import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.util.CommonUtil;
 import com.nowcoder.community.util.RedisKeyUtil;
 import com.nowcoder.community.util.ThreadLocalHolder;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
@@ -28,6 +30,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/like")
+@Api(tags = "点赞功能接口")
 public class LikeController {
 
     @Autowired
@@ -45,6 +48,7 @@ public class LikeController {
     @RequestMapping(path = "/giveLike",method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
+    @ApiOperation(value = "用户点赞帖子")
     public String like(int entityType,int entityId,int entityUserId,int postId){
         User user = userThreadLocalHolder.getCache();
 

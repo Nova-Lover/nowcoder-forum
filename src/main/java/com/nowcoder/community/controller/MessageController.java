@@ -10,6 +10,8 @@ import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CommonUtil;
 import com.nowcoder.community.util.ThreadLocalHolder;
 import com.nowcoder.community.vo.PageInfo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +32,7 @@ import java.util.*;
  */
 @Controller
 @RequestMapping("/message")
+@Api(tags = "私信接口")
 public class MessageController {
 
     @Autowired
@@ -154,6 +157,7 @@ public class MessageController {
     @RequestMapping(path = "/letter/send", method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
+    @ApiOperation(value = "发送私信")
     public String sendLetter(String toName, String content) {
         User target = userService.findUserByUserName(toName);
         if (CommonUtil.isEmtpy(target)) {

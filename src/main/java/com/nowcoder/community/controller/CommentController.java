@@ -12,6 +12,7 @@ import com.nowcoder.community.service.CommentService;
 import com.nowcoder.community.service.DiscussPostService;
 import com.nowcoder.community.util.RedisKeyUtil;
 import com.nowcoder.community.util.ThreadLocalHolder;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
@@ -29,6 +30,7 @@ import java.util.Date;
  */
 @Controller
 @RequestMapping("/comment")
+@Api(tags = "评论功能接口")
 public class CommentController {
 
     @Autowired

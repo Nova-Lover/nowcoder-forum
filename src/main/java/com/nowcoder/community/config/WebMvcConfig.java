@@ -4,7 +4,9 @@ import com.nowcoder.community.interceptor.DataInterceptor;
 import com.nowcoder.community.interceptor.LoginTicketInterceptor;
 import com.nowcoder.community.interceptor.MessageInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -44,5 +46,19 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         registry.addInterceptor(dataInterceptor)
                 .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg", "/**/*.ico", "/loginPage", "/registerPage");
+    }
+
+    /**
+     * 跨域配置
+     * @return
+     */
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**").allowedMethods("*");
+            }
+        };
     }
 }

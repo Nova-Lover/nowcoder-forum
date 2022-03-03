@@ -4,6 +4,8 @@ import com.nowcoder.community.config.event.EventProducer;
 import com.nowcoder.community.constant.MessageConstant;
 import com.nowcoder.community.entity.Event;
 import com.nowcoder.community.util.CommonUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ import java.util.Map;
 @Controller
 @Slf4j
 @RequestMapping("/share")
+@Api(tags = "分享接口")
 public class ShareController {
     /**
      * 生成图片时间比较长，一定是异步方式，最好使用事件驱动方式（分享事件）实现，controller->kafka 异步实现即可
@@ -54,6 +56,7 @@ public class ShareController {
 
     @RequestMapping(path = "/shareImage",method = RequestMethod.GET)
     @ResponseBody
+    @ApiOperation(value = "分享长图")
     public String share(String htmlUrl){
         // 文件名
         String fileName = CommonUtil.generateUUID();

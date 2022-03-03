@@ -1,4 +1,4 @@
-package com.nowcoder.community.resolver;
+package com.nowcoder.community.advice;
 
 import com.nowcoder.community.constant.ResultEnum;
 import com.nowcoder.community.exception.CustomizeException;

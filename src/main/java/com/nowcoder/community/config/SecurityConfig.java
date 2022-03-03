@@ -63,7 +63,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 SystemConstant.AUTHORITY_MODERATOR
         ).antMatchers(
                 "/discuss/delete",
-                "/data/**"
+                "/data/**",
+                "/*.html",
+                "/database"
         ).hasAnyAuthority(
                 SystemConstant.AUTHORITY_ADMIN
         ).anyRequest().permitAll()

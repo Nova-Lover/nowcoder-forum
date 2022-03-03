@@ -2,6 +2,7 @@ package com.nowcoder.community;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.annotation.PostConstruct;
 
@@ -12,6 +13,7 @@ import javax.annotation.PostConstruct;
  * @date 2022/2/1 15:15
  */
 @SpringBootApplication
+@EnableSwagger2
 public class CommunityApplication {
 
     @PostConstruct

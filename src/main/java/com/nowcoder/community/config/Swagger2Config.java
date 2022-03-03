@@ -45,11 +45,13 @@ public class Swagger2Config {
      */
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Spring Boot中使用Swagger2构建RESTful APIs")
+                .title("Spring Boot中使用Swagger2构建Restful APIs")
                 .description("牛客网社区论坛")
                 .termsOfServiceUrl("http://www.nowcoder.com/community")
                 .contact(new Contact("nowcoder","http://www.nowcoder.com/","32912299355@qq.com"))
-                .version("1.0")
+                .version("1.0.0")
+                .license("版权所有 ©牛客网信息科技有限公司")
                 .build();
+
     }
 }

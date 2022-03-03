@@ -11,6 +11,8 @@ import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CommonUtil;
 import com.nowcoder.community.util.ThreadLocalHolder;
 import com.nowcoder.community.vo.PageInfo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +32,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/follow")
+@Api(tags = "关注接口")
 public class FollowController {
 
     @Autowired
@@ -47,6 +50,7 @@ public class FollowController {
     @RequestMapping(path = "/toFollow",method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
+    @ApiOperation(value = "关注")
     public String toFollow(int entityType,int entityId){
         User user = userThreadLocalHolder.getCache();
         followService.toFollow(user.getId(),entityType,entityId);
@@ -64,6 +68,7 @@ public class FollowController {
     @RequestMapping(path = "/unFollow",method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
+    @ApiOperation(value = "取消关注")
     public String unFollow(int entityType,int entityId){
         User user = userThreadLocalHolder.getCache();
         followService.unFollow(user.getId(),entityType,entityId);

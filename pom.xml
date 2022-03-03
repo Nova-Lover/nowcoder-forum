@@ -14,6 +14,8 @@
   <groupId>com.nowcoder</groupId>
   <artifactId>nowcoder-forum</artifactId>
   <version>1.0-SNAPSHOT</version>
+  <!--程序部署到tomcat中时，指定打包方式为war-->
+  <packaging>war</packaging>
 
   <name>nowcoder-forum</name>
   <!-- FIXME change it to the project's website -->
@@ -102,12 +104,6 @@
       </exclusions>
     </dependency>
 
-    <!-- druid -->
-    <!--<dependency>
-      <groupId>com.alibaba</groupId>
-      <artifactId>druid</artifactId>
-      <version>1.1.21</version>
-    </dependency>-->
 
     <!--spring boot参数校验-->
     <dependency>
@@ -210,13 +206,18 @@
       <version>2.7.0</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
 
   </dependencies>
 
   <!--  配置环境  -->
-  <!--<profiles>
+  <profiles>
     <profile>
-      &lt;!&ndash; 开发 &ndash;&gt;
+      <!-- 开发 -->
       <id>dev</id>
       <activation>
         <activeByDefault>true</activeByDefault>
@@ -226,30 +227,18 @@
       </properties>
     </profile>
     <profile>
-      &lt;!&ndash; 测试 &ndash;&gt;
-      <id>test</id>
-      <properties>
-        <activatedProperties>test</activatedProperties>
-      </properties>
-    </profile>
-    <profile>
-      &lt;!&ndash; 准生产 &ndash;&gt;
-      <id>pre</id>
-      <properties>
-        <activatedProperties>pre</activatedProperties>
-      </properties>
-    </profile>
-    <profile>
-      &lt;!&ndash; 生产 &ndash;&gt;
+      <!-- 生产 -->
       <id>prod</id>
       <properties>
         <activatedProperties>prod</activatedProperties>
       </properties>
     </profile>
-  </profiles>-->
+  </profiles>
 
 
   <build>
+    <!--使用Spring Boot maven插件打包:项目名称-->
+    <finalName>community</finalName>
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>

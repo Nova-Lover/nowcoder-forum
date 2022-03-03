@@ -16,6 +16,8 @@ import com.nowcoder.community.util.CommonUtil;
 import com.nowcoder.community.util.RedisKeyUtil;
 import com.nowcoder.community.util.ThreadLocalHolder;
 import com.nowcoder.community.vo.PageInfo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
@@ -35,6 +37,7 @@ import java.util.*;
  */
 @Controller
 @RequestMapping("/discuss")
+@Api(tags = "帖子接口")
 public class DiscussPostController {
 
     @Autowired
@@ -61,6 +64,7 @@ public class DiscussPostController {
     @RequestMapping(path = "/add",method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
+    @ApiOperation(value = "添加帖子")
     public String addDiscussPost(String title,String content){
         User user = userThreadLocalHolder.getCache();
         if(CommonUtil.isEmtpy(user)){
@@ -182,6 +186,7 @@ public class DiscussPostController {
      */
     @RequestMapping(path = "/top",method = RequestMethod.POST)
     @ResponseBody
+    @ApiOperation(value = "帖子置顶")
     public String setTop(int id){
         User user = userThreadLocalHolder.getCache();
         if(CommonUtil.isEmtpy(user)){
@@ -208,6 +213,7 @@ public class DiscussPostController {
      */
     @RequestMapping(path = "/fine",method = RequestMethod.POST)
     @ResponseBody
+    @ApiOperation(value = "帖子加精")
     public String setFine(int id){
         User user = userThreadLocalHolder.getCache();
         if(CommonUtil.isEmtpy(user)){
@@ -237,6 +243,7 @@ public class DiscussPostController {
      */
     @RequestMapping(path = "/delete",method = RequestMethod.POST)
     @ResponseBody
+    @ApiOperation(value = "删除帖子")
     public String setDelete(int id){
         User user = userThreadLocalHolder.getCache();
         if(CommonUtil.isEmtpy(user)){
